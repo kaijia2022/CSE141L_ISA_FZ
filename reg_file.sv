@@ -1,42 +1,35 @@
 // cache memory/register file
-// default address pointer width = 4, for 16 registers
-module reg_file #(parameter pw=4)(
-  input[7:0] dat_in,
-  input      clk,
-  input      wr_en,           // write enable
-  input[pw:0] wr_addr,		  // write address pointer
-              rd_addrA,		  // read address pointers
-			  rd_addrB,
-  output logic[7:0] datA_out, // read data
-                    datB_out);
+module register_file(
+    input clk,
+	input [1:0] reg_dest1,
+    input [2:0] reg_dest2,  
+    input [1:0] reg_src1,   
+    input [2:0] reg_src2, 
+    input [7:0] data_in, 
+	input read_enable,
+    input write_enable, 
+    output [7:0] data_out1,
+    output [7:0] data_out2 );
 
-  logic[7:0] core[2**pw];    // 2-dim array  8 wide  16 deep
+	reg [7:0] registers[7:0];
 
-// reads are combinational
-  assign datA_out = core[rd_addrA];
-  assign datB_out = core[rd_addrB];
+	// combinational reading
+	always @(*) begin
+		if (read_enable) begin
+			data_out1 <= registers[reg_src1];  
+			data_out2 <= registers[reg_src2];  
+		end else begin
+			data_out1 = 8'bZ; 
+            data_out2 = 8'bZ; 
+        end
+	end
 
-// writes are sequential (clocked)
-  always_ff @(posedge clk)
-    if(wr_en)				   // anything but stores or no ops
-      core[wr_addr] <= dat_in; 
+	// sequential writing
+	always_ff @(posedge clk) begin
+		if (write_enable) begin
+			registers[reg_dest1] <= data_in;
+			registers[reg_dest2] <= data_in;
+		end
+	end
 
 endmodule
-/*
-	  xxxx_xxxx
-	  xxxx_xxxx
-	  xxxx_xxxx
-	  xxxx_xxxx
-	  xxxx_xxxx
-	  xxxx_xxxx
-	  xxxx_xxxx
-	  xxxx_xxxx
-	  xxxx_xxxx
-	  xxxx_xxxx
-	  xxxx_xxxx
-	  xxxx_xxxx
-	  xxxx_xxxx
-	  xxxx_xxxx
-	  xxxx_xxxx
-	  xxxx_xxxx
-*/
