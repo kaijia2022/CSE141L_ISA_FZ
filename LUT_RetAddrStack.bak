@@ -1,0 +1,27 @@
+module LUT_RetAddrStack #(parameter D=9,parameter STACK_DEPTH = 8)(
+  input logic  clk,
+  input       [D-1:0] addr,	
+  input       [D-1:0] target_in,	  
+  input	      call,
+  input       ret,
+  output logic[D-1:0] target_out);
+
+  logic [D-1:0] ReturnAddr_Stack[STACK_DEPTH-1:0];
+  logic [$clog2(STACK_DEPTH)-1:0] sp = 0;
+
+  always_ff@(posedge) begin
+     if (call) begin
+     	if (sp < STACK_DEPTH) begin
+        	stack[sp] <= addr + 1;
+        	sp <= sp + 1;
+      	end
+     end 
+     else if (ret) begin
+     	if (sp > 0) begin
+        	sp <= sp - 1;
+     	end
+     end
+     assign target_out = (ret && sp > 0) ? stack[sp] : target_in;
+   end
+
+endmodule
