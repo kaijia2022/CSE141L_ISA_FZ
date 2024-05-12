@@ -1,7 +1,7 @@
-module PC_LUT #(parameter D=9)(
+module PC_LUT #(parameter D=12)(
   input       [D-1:0] addr,	  
-  output logic[D-1:0] target);
-  input	      jump,	
+  output logic[D-1:0] target,
+  input	      jump);	
   logic [D-1:0] Jump_Instructions[$];
   logic [D-1:0] Jump_Offsets[$];
   initial begin

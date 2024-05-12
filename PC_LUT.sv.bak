@@ -1,12 +1,12 @@
 module PC_LUT #(parameter D=9)(
   input       [D-1:0] addr,	  
-  output logic[D-1:0] target);
-  input	      jump,	
+  output logic[D-1:0] target,
+  input	      jump);	
   logic [D-1:0] Jump_Instructions[$];
   logic [D-1:0] Jump_Offsets[$];
   initial begin
-    $readmemb("Branch_Instructions.txt", Jump_Instructions);
-    $readmemh("Branch_Offsets.txt", Jump_Offsets); 
+    $readmemb("Jump_Instructions.txt", Jump_Instructions);
+    $readmemh("Jump_Offsets.txt", Jump_Offsets); 
   end
 
   always_comb begin

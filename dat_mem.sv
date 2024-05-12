@@ -1,3 +1,4 @@
+
 // 8-bit wide, 256-word (byte) deep memory array
 module dat_mem (
   input[7:0] dat_in,

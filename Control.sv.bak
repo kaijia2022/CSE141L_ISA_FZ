@@ -1,30 +1,33 @@
 // control decoder
-module Control #(parameter opwidth = 3, mcodebits = 4)(
-  input [mcodebits-1:0] instr,    // subset of machine code (any width you need)
-  output logic RegDst, Branch, 
-     MemtoReg, MemWrite, ALUSrc, RegWrite,
-  output logic[opwidth-1:0] ALUOp);	   // for up to 8 ALU operations
+module Control #(parameter opwidth = 5, Width = 5)(
+  input [opwidth-1:0] opcode,   
+  output logic memRead, memWrite, regWrite,memToReg, jump, call, ret,lea, mode,
+  output logic[Width-1:0] ALUOp);	  
 
 always_comb begin
 // defaults
-  RegDst 	=   'b0;   // 1: not in place  just leave 0
-  Branch 	=   'b0;   // 1: branch (jump)
-  MemWrite  =	'b0;   // 1: store to memory
-  ALUSrc 	=	'b0;   // 1: immediate  0: second reg file output
-  RegWrite  =	'b1;   // 0: for store or no op  1: most other operations 
-  MemtoReg  =	'b0;   // 1: load -- route memory instead of ALU to reg_file data in
-  ALUOp	    =   'b111; // y = a+0;
-// sample values only -- use what you need
-case(instr)    // override defaults with exceptions
-  'b0000:  begin					// store operation
-               MemWrite = 'b1;      // write to data mem
-               RegWrite = 'b0;      // typically don't also load reg_file
-			 end
-  'b00001:  ALUOp      = 'b000;  // add:  y = a+b
-  'b00010:  begin				  // load
-			   MemtoReg = 'b1;    // 
-             end
-// ...
+	memRead = 'b0;
+	memWrite = 'b0;
+	regWrite = 'b0;
+	memToReg = 'b0;
+	jump = 'b0;
+	call = 'b0;
+	ret = 'b0;
+	lea = 'b0;
+	mode = 'b0;
+
+case(instr)    
+  'b00000:  mode = !mode;      
+  'b01010: begin
+	 memRead  = 'b1; 
+	 memToReg = 'b1;
+	 regWrite = 'b1;
+   end 
+  'b01001: memWrite = 'b1;                        
+  'b00011, 'b00100, 'b01011, 'b01100:    jump = 'b1;             //JE, JZ, CALL, RET
+  'b01000: lea = 'b1;
+  default: ALUOp = opcode;
+	
 endcase
 
 end

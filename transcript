@@ -1,0 +1,72 @@
+# Compile of alu.sv was successful.
+# Compile of Control.sv was successful.
+# Compile of dat_mem.sv was successful.
+# Compile of instr_ROM.sv was successful.
+# Compile of PC.sv was successful.
+# Compile of PC_LUT.sv was successful.
+# Compile of reg_file.sv was successful.
+# Compile of top_level.sv was successful.
+# Compile of Decoder.sv was successful.
+# Compile of LUT_RetAddrStack.sv was successful.
+# Compile of testbench.sv failed with 3 errors.
+# 11 compiles, 1 failed with 3 errors.
+# Compile of alu.sv was successful.
+# Compile of Control.sv was successful.
+# Compile of dat_mem.sv was successful.
+# Compile of instr_ROM.sv was successful.
+# Compile of PC.sv was successful.
+# Compile of PC_LUT.sv was successful.
+# Compile of reg_file.sv was successful.
+# Compile of top_level.sv was successful.
+# Compile of Decoder.sv was successful.
+# Compile of LUT_RetAddrStack.sv was successful.
+# Compile of testbench.sv failed with 1 errors.
+# 11 compiles, 1 failed with 1 error.
+# Compile of alu.sv was successful.
+# Compile of Control.sv was successful.
+# Compile of dat_mem.sv was successful.
+# Compile of instr_ROM.sv was successful.
+# Compile of PC.sv was successful.
+# Compile of PC_LUT.sv was successful.
+# Compile of reg_file.sv was successful.
+# Compile of top_level.sv was successful.
+# Compile of Decoder.sv was successful.
+# Compile of LUT_RetAddrStack.sv was successful.
+# Compile of testbench.sv failed with 1 errors.
+# 11 compiles, 1 failed with 1 error.
+# Compile of alu.sv was successful.
+# Compile of Control.sv was successful.
+# Compile of dat_mem.sv was successful.
+# Compile of instr_ROM.sv was successful.
+# Compile of PC.sv was successful.
+# Compile of PC_LUT.sv was successful.
+# Compile of reg_file.sv was successful.
+# Compile of top_level.sv was successful.
+# Compile of Decoder.sv was successful.
+# Compile of LUT_RetAddrStack.sv was successful.
+# Compile of testbench.sv failed with 1 errors.
+# 11 compiles, 1 failed with 1 error.
+# Compile of alu.sv was successful.
+# Compile of Control.sv was successful.
+# Compile of dat_mem.sv was successful.
+# Compile of instr_ROM.sv was successful.
+# Compile of PC.sv was successful.
+# Compile of PC_LUT.sv was successful.
+# Compile of reg_file.sv was successful.
+# Compile of top_level.sv was successful.
+# Compile of Decoder.sv was successful.
+# Compile of LUT_RetAddrStack.sv was successful.
+# Compile of testbench.sv was successful.
+# 11 compiles, 0 failed with no errors.
+vsim -gui work.testbench
+# vsim -gui work.testbench 
+# Start time: 03:19:46 on May 13,2024
+# Loading sv_std.std
+# Loading work.testbench
+# Loading work.PC
+add wave -position insertpoint sim:/testbench/pc1/*
+run -all
+# Break key hit
+# Break in Module testbench at E:/CSE141L/ISA_Design_FZ/testbench.sv line 20
+# End time: 04:03:39 on May 13,2024, Elapsed time: 0:43:53
+# Errors: 0, Warnings: 7

@@ -3,8 +3,7 @@
 // use either or both, as desired
 module PC #(parameter D=9)(
   input reset,					// synchronous reset
-        clk,
-	jump_en,             // rel. jump enable			// abs. jump enable
+        clk,           
   input       [D-1:0] target,	// how far/where to jump
   output logic[D-1:0] prog_ctr
 );

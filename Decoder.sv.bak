@@ -1,31 +1,37 @@
 // control decoder
-module Decoder #(parameter opwidth = 3, regwidth = 3)(
-  input		Mode,    
-
-  output logic[regwidth-1:0] ALUOp);	   // for up to 8 ALU operations
+module Decoder #(parameter opwidth = 5,parameter regwidth = 3)(
+  input logic[8:0] mach_code,
+  input		mode,    
+  output logic[opwidth-1:0] opcode,	
+  output logic[regwidth-1:0] reg1, reg2,	
+  output logic[7:0] immediate);   // for up to 8 ALU operations
 
 always_comb begin
-// defaults
-  RegDst 	=   'b0;   // 1: not in place  just leave 0
-  Branch 	=   'b0;   // 1: branch (jump)
-  how_high = 'b0
-  MemWrite  =	'b0;   // 1: store to memory
-  ALUSrc 	=	'b0;   // 1: immediate  0: second reg file output
-  RegWrite  =	'b1;   // 0: for store or no op  1: most other operations 
-  MemtoReg  =	'b0;   // 1: load -- route memory instead of ALU to reg_file data in
-  ALUOp	    =   'b111; // y = a+0;
-// sample values only -- use what you need
-case(instr)    // override defaults with exceptions
-  'b0000:  begin					// store operation
-               MemWrite = 'b1;      // write to data mem
-               RegWrite = 'b0;      // typically don't also load reg_file
-			 end
-  'b00001:  ALUOp      = 'b000;  // add:  y = a+b
-  'b00010:  begin				  // load
-			   MemtoReg = 'b1;    // 
-             end
-// ...
-endcase
+	//reg-reg mode
+	if (!mode) begin
+		assign opcode = mach_code[8:4];
+		assign reg1 = {1'b0,mach_code[3:2]};
+		assign reg2 = {1'b0,mach_code[1:0]};
+
+		
+	end
+	//reg-immediate mode
+	else begin
+		assign opcode = {3'b00,mach_code[8:6]};
+		assign reg1 = mach_code[5:3];
+		assign reg2 = mach_code[2:0];
+		assign opcode[4:3] = 2'b00;   //extend by 2 bit
+		case(reg2)
+			'b000:	immediate = 'd0; 
+  			'b001:  immediate = 'd1;  
+			'b010:  immediate = 'd4; 
+			'b011:  immediate = 'd8; 
+			'b100:  immediate = 'd16;
+			'b101:  immediate = 'd32; 
+			'b110:  immediate = 'd64; 
+			'b111:  immediate = 'd127; 
+		 endcase         
+	end
 
 end
 	
