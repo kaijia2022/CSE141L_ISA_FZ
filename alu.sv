@@ -20,12 +20,26 @@ always_comb begin
   gt = 'b0;
   lt = 'b0;
   case(ALUOp)
-    5'b01101:      //ADD
+    5'b01101:  begin    //ADD 
       {c_o,rslt} = inA + inB + c_i;
-    5'b01110: // SUB 
+      zero = !rslt;
+    end
+    5'b01110: begin// SUB 
       {c_o,rslt} = inA - inB + c_i;
-    5'b00010: // DEC
+      zero = !rslt;
+    end
+    5'b10110:  begin    //ADDS 
+      {c_o,rslt} = $signed(inA)+ $signed(inB) + c_i;
+      zero = !rslt;
+    end
+    5'b10111: begin// SUBS 
+      {c_o,rslt} = $signed(inA)- $signed(inB) + c_i;
+      zero = !rslt;
+    end
+    5'b00010: begin// DEC
       rslt = inA - 1;
+      zero = !rslt;
+    end
     5'b10000: begin// XOR 
 	  rslt = inA ^ inB;
   	  zero = !rslt;

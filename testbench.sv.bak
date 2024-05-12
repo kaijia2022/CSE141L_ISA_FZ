@@ -1,6 +1,5 @@
 module testbench;
-	bit  clk,reset,
-       	    start = 'b1;
+	bit  clk,reset;
   	wire done;
 	
 	logic[ 12-1:0] target, prog_ctr;	
@@ -16,7 +15,7 @@ module testbench;
 		gt,
 		lt,
         	zero,
-		c_o,
+		c_o,rslt;
 	
 
 
@@ -26,11 +25,11 @@ module testbench;
 		 .target,
 		 .prog_ctr );
 	
-	 alu alu1(.ALUOp(),
-        .inA    (datA),
-	.inB    (datB),
+	 alu alu1(.ALUOp,
+        .inA    (dataA),
+	.inB    (dataB),
 	.c_i,  
-	.rslt  ,
+	.rslt (rslt)  ,
 	.c_o, .equal, .gt,.lt,.zero
 	);  
 	
@@ -40,24 +39,68 @@ module testbench;
   	end
 
 	initial begin
-		#100ns;
+		#100ns;   //pc, alu-ADD
 		target = 12'b001001010111;
 		c_i = 'b0;
 		dataA = 8'b00000001;
 		dataB = 8'b00000100;
 		ALUOp = 5'b01101; 		
-		#200ns start = 'b0
-		#200ns start = 'b1; 
-		c_i = 'b0;
+		#50ns
+		c_i = 'b0;         //sub
+		dataA = 8'b01110001;
+		dataB = 8'b00100100;
+		ALUOp = 5'b01110; 	
+		#50ns
+		c_i = 'b0;         //adds
+		dataA = 8'b10000000;
+		dataB = 8'b00000001;
+		ALUOp = 5'b10110; 	
+		#50ns
+		c_i = 'b0;         //subs
+		dataA = 8'b00000000;
+		dataB = 8'b00000001;
+		ALUOp = 5'b10111; 	
+		#50ns
+		c_i = 'b0;         //dec
+		dataA = 8'b00000010;
+		dataB = 8'b00000000;
+		ALUOp = 5'b00010; 	
+		#50ns
+		c_i = 'b0;         //xor
 		dataA = 8'b01110001;
 		dataB = 8'b00100100;
 		ALUOp = 5'b10000; 	
-		#200ns start = 'b0
-		#200ns start = 'b1; 
-		c_i = 'b0;
-		dataA = 8'b01110001;
+		#50ns
+		c_i = 'b0;         //and
+		dataA = 8'b11111111;
 		dataB = 8'b00100100;
-		ALUOp = 5'b10000; 	
+		ALUOp = 5'b01111; 	
+		#50ns
+		c_i = 'b0;         //or
+		dataA = 8'b11111111;
+		dataB = 8'b00100100;
+		ALUOp = 5'b10101; 	
+		#50ns
+		c_i = 'b1;      //logical right shift
+		dataA = 8'b01110001;
+		dataB = 8'b00000000;
+		ALUOp = 5'b10010; 	
+		#50ns
+		c_i = 'b1;      //logical left shift
+		dataA = 8'b01110001;
+		dataB = 8'b00000000;
+		ALUOp = 5'b10010; 	
+		#50ns
+		c_i = 'b1;      //right shift with carry
+		dataA = 8'b01110001;
+		dataB = 8'b00000000;
+		ALUOp = 5'b10010; 	
+		#50ns
+		c_i = 'b1;      //left shift with carry
+		dataA = 8'b01110001;
+		dataB = 8'b00000000;
+		ALUOp = 5'b10010; 	
+		#50ns
 		$stop;
 	end
 endmodule

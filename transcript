@@ -8,44 +8,62 @@
 # Compile of top_level.sv was successful.
 # Compile of Decoder.sv was successful.
 # Compile of LUT_RetAddrStack.sv was successful.
+# Compile of testbench.sv failed with 4 errors.
+# 11 compiles, 1 failed with 4 errors.
+# Compile of alu.sv was successful.
+# Compile of Control.sv was successful.
+# Compile of dat_mem.sv was successful.
+# Compile of instr_ROM.sv was successful.
+# Compile of PC.sv was successful.
+# Compile of PC_LUT.sv was successful.
+# Compile of reg_file.sv was successful.
+# Compile of top_level.sv was successful.
+# Compile of Decoder.sv was successful.
+# Compile of LUT_RetAddrStack.sv was successful.
+# Compile of testbench.sv failed with 4 errors.
+# 11 compiles, 1 failed with 4 errors.
+# Error opening E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv
+# Path name 'E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv' doesn't exist.
+# Error opening E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv
+# Path name 'E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv' doesn't exist.
+# Error opening E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv
+# Path name 'E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv' doesn't exist.
+# Error opening E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv
+# Path name 'E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv' doesn't exist.
+# Error opening E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv
+# Path name 'E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv' doesn't exist.
+# Error opening E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv
+# Path name 'E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv' doesn't exist.
+# Compile of alu.sv was successful.
+# Compile of Control.sv was successful.
+# Compile of dat_mem.sv was successful.
+# Compile of instr_ROM.sv was successful.
+# Compile of PC.sv was successful.
+# Compile of PC_LUT.sv was successful.
+# Compile of reg_file.sv was successful.
+# Compile of top_level.sv was successful.
+# Compile of Decoder.sv was successful.
+# Compile of LUT_RetAddrStack.sv was successful.
 # Compile of testbench.sv failed with 3 errors.
 # 11 compiles, 1 failed with 3 errors.
-# Compile of alu.sv was successful.
-# Compile of Control.sv was successful.
-# Compile of dat_mem.sv was successful.
-# Compile of instr_ROM.sv was successful.
-# Compile of PC.sv was successful.
-# Compile of PC_LUT.sv was successful.
-# Compile of reg_file.sv was successful.
-# Compile of top_level.sv was successful.
-# Compile of Decoder.sv was successful.
-# Compile of LUT_RetAddrStack.sv was successful.
-# Compile of testbench.sv failed with 1 errors.
-# 11 compiles, 1 failed with 1 error.
-# Compile of alu.sv was successful.
-# Compile of Control.sv was successful.
-# Compile of dat_mem.sv was successful.
-# Compile of instr_ROM.sv was successful.
-# Compile of PC.sv was successful.
-# Compile of PC_LUT.sv was successful.
-# Compile of reg_file.sv was successful.
-# Compile of top_level.sv was successful.
-# Compile of Decoder.sv was successful.
-# Compile of LUT_RetAddrStack.sv was successful.
-# Compile of testbench.sv failed with 1 errors.
-# 11 compiles, 1 failed with 1 error.
-# Compile of alu.sv was successful.
-# Compile of Control.sv was successful.
-# Compile of dat_mem.sv was successful.
-# Compile of instr_ROM.sv was successful.
-# Compile of PC.sv was successful.
-# Compile of PC_LUT.sv was successful.
-# Compile of reg_file.sv was successful.
-# Compile of top_level.sv was successful.
-# Compile of Decoder.sv was successful.
-# Compile of LUT_RetAddrStack.sv was successful.
-# Compile of testbench.sv failed with 1 errors.
-# 11 compiles, 1 failed with 1 error.
+# Error opening E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv
+# Path name 'E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv' doesn't exist.
+# Error opening E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv
+# Path name 'E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv' doesn't exist.
+# Error opening E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv
+# Path name 'E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv' doesn't exist.
+# Error opening E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv
+# Path name 'E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv' doesn't exist.
+# Error opening E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv
+# Path name 'E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv' doesn't exist.
+# Error opening E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv
+# Path name 'E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv' doesn't exist.
+# Error opening E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv
+# Path name 'E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv' doesn't exist.
+# Error opening E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv
+# Path name 'E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv' doesn't exist.
+# Error opening E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv
+# Path name 'E:/CSE141L/ISA_Design_FZ/(vlog-13069) E:/CSE141L/ISA_Design_FZ/testbench.sv' doesn't exist.
 # Compile of alu.sv was successful.
 # Compile of Control.sv was successful.
 # Compile of dat_mem.sv was successful.
@@ -60,13 +78,156 @@
 # 11 compiles, 0 failed with no errors.
 vsim -gui work.testbench
 # vsim -gui work.testbench 
-# Start time: 03:19:46 on May 13,2024
+# Start time: 06:36:41 on May 13,2024
 # Loading sv_std.std
 # Loading work.testbench
 # Loading work.PC
+# Loading work.alu
+# ** Warning: (vsim-3015) [PCDPC] - Port size (8) does not match connection size (1) for port 'inA'. The port definition is at: E:/CSE141L/ISA_Design_FZ/alu.sv(5).
+#    Time: 0 ps  Iteration: 0  Instance: /testbench/alu1 File: E:/CSE141L/ISA_Design_FZ/testbench.sv Line: 29
+# ** Warning: (vsim-3015) [PCDPC] - Port size (8) does not match connection size (1) for port 'inB'. The port definition is at: E:/CSE141L/ISA_Design_FZ/alu.sv(5).
+#    Time: 0 ps  Iteration: 0  Instance: /testbench/alu1 File: E:/CSE141L/ISA_Design_FZ/testbench.sv Line: 29
+# ** Warning: (vsim-3015) [PCDPC] - Port size (8) does not match connection size (1) for port 'rslt'. The port definition is at: E:/CSE141L/ISA_Design_FZ/alu.sv(7).
+#    Time: 0 ps  Iteration: 0  Instance: /testbench/alu1 File: E:/CSE141L/ISA_Design_FZ/testbench.sv Line: 29
+add wave -position insertpoint sim:/testbench/alu1/*
 add wave -position insertpoint sim:/testbench/pc1/*
 run -all
-# Break key hit
-# Break in Module testbench at E:/CSE141L/ISA_Design_FZ/testbench.sv line 20
-# End time: 04:03:39 on May 13,2024, Elapsed time: 0:43:53
-# Errors: 0, Warnings: 7
+# ** Note: $stop    : E:/CSE141L/ISA_Design_FZ/testbench.sv(61)
+#    Time: 900 ns  Iteration: 0  Instance: /testbench
+# Break in Module testbench at E:/CSE141L/ISA_Design_FZ/testbench.sv line 61
+# Compile of alu.sv was successful.
+# Compile of Control.sv was successful.
+# Compile of dat_mem.sv was successful.
+# Compile of instr_ROM.sv was successful.
+# Compile of PC.sv was successful.
+# Compile of PC_LUT.sv was successful.
+# Compile of reg_file.sv was successful.
+# Compile of top_level.sv was successful.
+# Compile of Decoder.sv was successful.
+# Compile of LUT_RetAddrStack.sv was successful.
+# Compile of testbench.sv was successful.
+# 11 compiles, 0 failed with no errors.
+vsim -gui work.testbench
+# End time: 06:47:14 on May 13,2024, Elapsed time: 0:10:33
+# Errors: 0, Warnings: 9
+# vsim -gui work.testbench 
+# Start time: 06:47:14 on May 13,2024
+# Loading sv_std.std
+# Loading work.testbench
+# Loading work.PC
+# Loading work.alu
+# ** Warning: (vsim-3015) [PCDPC] - Port size (8) does not match connection size (1) for port 'inA'. The port definition is at: E:/CSE141L/ISA_Design_FZ/alu.sv(5).
+#    Time: 0 ps  Iteration: 0  Instance: /testbench/alu1 File: E:/CSE141L/ISA_Design_FZ/testbench.sv Line: 28
+# ** Warning: (vsim-3015) [PCDPC] - Port size (8) does not match connection size (1) for port 'inB'. The port definition is at: E:/CSE141L/ISA_Design_FZ/alu.sv(5).
+#    Time: 0 ps  Iteration: 0  Instance: /testbench/alu1 File: E:/CSE141L/ISA_Design_FZ/testbench.sv Line: 28
+# ** Warning: (vsim-3015) [PCDPC] - Port size (8) does not match connection size (1) for port 'rslt'. The port definition is at: E:/CSE141L/ISA_Design_FZ/alu.sv(7).
+#    Time: 0 ps  Iteration: 0  Instance: /testbench/alu1 File: E:/CSE141L/ISA_Design_FZ/testbench.sv Line: 28
+add wave -position insertpoint sim:/testbench/pc1/*
+add wave -position insertpoint sim:/testbench/alu1/*
+run -all
+# ** Note: $stop    : E:/CSE141L/ISA_Design_FZ/testbench.sv(58)
+#    Time: 200 ns  Iteration: 0  Instance: /testbench
+# Break in Module testbench at E:/CSE141L/ISA_Design_FZ/testbench.sv line 58
+# Compile of alu.sv was successful.
+# Compile of Control.sv was successful.
+# Compile of dat_mem.sv was successful.
+# Compile of instr_ROM.sv was successful.
+# Compile of PC.sv was successful.
+# Compile of PC_LUT.sv was successful.
+# Compile of reg_file.sv was successful.
+# Compile of top_level.sv was successful.
+# Compile of Decoder.sv was successful.
+# Compile of LUT_RetAddrStack.sv was successful.
+# Compile of testbench.sv was successful.
+# 11 compiles, 0 failed with no errors.
+add wave -position insertpoint sim:/testbench/pc1/*
+add wave -position insertpoint sim:/testbench/alu1/*
+run -all
+add wave -position insertpoint sim:/testbench/pc1/*
+add wave -position insertpoint sim:/testbench/alu1/*
+restart -f
+# ** Note: (vsim-12125) Error and warning message counts have been reset to '0' because of 'restart'.
+# Loading work.testbench
+# Loading work.PC
+# Loading work.alu
+# ** Warning: (vsim-3015) [PCDPC] - Port size (8) does not match connection size (1) for port 'rslt'. The port definition is at: E:/CSE141L/ISA_Design_FZ/alu.sv(7).
+#    Time: 0 ps  Iteration: 0  Instance: /testbench/alu1 File: E:/CSE141L/ISA_Design_FZ/testbench.sv Line: 28
+run -all
+# GetModuleFileName: 找不到指定的模块。
+# 
+# 
+# GetModuleFileName: 找不到指定的模块。
+# 
+# 
+# GetModuleFileName: 找不到指定的模块。
+# 
+# 
+# ** Note: $stop    : E:/CSE141L/ISA_Design_FZ/testbench.sv(58)
+#    Time: 200 ns  Iteration: 0  Instance: /testbench
+# Break in Module testbench at E:/CSE141L/ISA_Design_FZ/testbench.sv line 58
+# Compile of alu.sv was successful.
+# Compile of Control.sv was successful.
+# Compile of dat_mem.sv was successful.
+# Compile of instr_ROM.sv was successful.
+# Compile of PC.sv was successful.
+# Compile of PC_LUT.sv was successful.
+# Compile of reg_file.sv was successful.
+# Compile of top_level.sv was successful.
+# Compile of Decoder.sv was successful.
+# Compile of LUT_RetAddrStack.sv was successful.
+# Compile of testbench.sv was successful.
+# 11 compiles, 0 failed with no errors.
+restart -f
+# ** Note: (vsim-12125) Error and warning message counts have been reset to '0' because of 'restart'.
+# Loading work.testbench
+# Loading work.PC
+# Loading work.alu
+# ** Warning: (vsim-3015) [PCDPC] - Port size (8) does not match connection size (1) for port 'rslt'. The port definition is at: E:/CSE141L/ISA_Design_FZ/alu.sv(7).
+#    Time: 0 ps  Iteration: 0  Instance: /testbench/alu1 File: E:/CSE141L/ISA_Design_FZ/testbench.sv Line: 28
+run -all
+# GetModuleFileName: 找不到指定的模块。
+# 
+# 
+# GetModuleFileName: 找不到指定的模块。
+# 
+# 
+# GetModuleFileName: 找不到指定的模块。
+# 
+# 
+# ** Note: $stop    : E:/CSE141L/ISA_Design_FZ/testbench.sv(58)
+#    Time: 200 ns  Iteration: 0  Instance: /testbench
+# Break in Module testbench at E:/CSE141L/ISA_Design_FZ/testbench.sv line 58
+# Compile of alu.sv was successful.
+# Compile of Control.sv was successful.
+# Compile of dat_mem.sv was successful.
+# Compile of instr_ROM.sv was successful.
+# Compile of PC.sv was successful.
+# Compile of PC_LUT.sv was successful.
+# Compile of reg_file.sv was successful.
+# Compile of top_level.sv was successful.
+# Compile of Decoder.sv was successful.
+# Compile of LUT_RetAddrStack.sv was successful.
+# Compile of testbench.sv was successful.
+# 11 compiles, 0 failed with no errors.
+restart -f
+# ** Note: (vsim-12125) Error and warning message counts have been reset to '0' because of 'restart'.
+# Loading work.testbench
+# Loading work.PC
+# Loading work.alu
+# ** Warning: (vsim-3015) [PCDPC] - Port size (8) does not match connection size (1) for port 'rslt'. The port definition is at: E:/CSE141L/ISA_Design_FZ/alu.sv(7).
+#    Time: 0 ps  Iteration: 0  Instance: /testbench/alu1 File: E:/CSE141L/ISA_Design_FZ/testbench.sv Line: 28
+run -all
+# GetModuleFileName: 找不到指定的模块。
+# 
+# 
+# GetModuleFileName: 找不到指定的模块。
+# 
+# 
+# GetModuleFileName: 找不到指定的模块。
+# 
+# 
+# ** Note: $stop    : E:/CSE141L/ISA_Design_FZ/testbench.sv(119)
+#    Time: 850 ns  Iteration: 0  Instance: /testbench
+# Break in Module testbench at E:/CSE141L/ISA_Design_FZ/testbench.sv line 119
+# End time: 07:56:33 on May 13,2024, Elapsed time: 1:09:19
+# Errors: 0, Warnings: 2

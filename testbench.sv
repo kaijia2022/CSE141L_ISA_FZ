@@ -1,6 +1,5 @@
 module testbench;
-	bit  clk,reset,
-       	    start = 'b1;
+	bit  clk,reset;
   	wire done;
 	
 	logic[ 12-1:0] target, prog_ctr;	
@@ -16,7 +15,7 @@ module testbench;
 		gt,
 		lt,
         	zero,
-		c_o,
+		c_o,rslt;
 	
 
 
@@ -26,11 +25,11 @@ module testbench;
 		 .target,
 		 .prog_ctr );
 	
-	 alu alu1(.ALUOp(),
-        .inA    (datA),
-	.inB    (datB),
+	 alu alu1(.ALUOp,
+        .inA    (dataA),
+	.inB    (dataB),
 	.c_i,  
-	.rslt  ,
+	.rslt (rslt)  ,
 	.c_o, .equal, .gt,.lt,.zero
 	);  
 	
@@ -46,18 +45,77 @@ module testbench;
 		dataA = 8'b00000001;
 		dataB = 8'b00000100;
 		ALUOp = 5'b01101; 		
-		#200ns start = 'b0
-		#200ns start = 'b1; 
+		#50ns
+		c_i = 'b0;         //sub
+		dataA = 8'b01110001;
+		dataB = 8'b00100100;
+		ALUOp = 5'b01110; 	
+		#50ns
+		c_i = 'b0;         //adds
+		dataA = 8'b10000000;
+		dataB = 8'b00000001;
+		ALUOp = 5'b10110; 	
+		#50ns
+		c_i = 'b0;         //subs
+		dataA = 8'b00000000;
+		dataB = 8'b00000001;
+		ALUOp = 5'b10111; 	
+		#50ns
+		c_i = 'b0;         //dec
+		dataA = 8'b00000010;
+		dataB = 8'b00000000;
+		ALUOp = 5'b00010; 	
+		#50ns
 		c_i = 'b0;         //xor
 		dataA = 8'b01110001;
 		dataB = 8'b00100100;
 		ALUOp = 5'b10000; 	
-		#200ns start = 'b0
-		#200ns start = 'b1; 
+		#50ns
+		c_i = 'b0;         //and
+		dataA = 8'b11111111;
+		dataB = 8'b00100100;
+		ALUOp = 5'b01111; 	
+		#50ns
+		c_i = 'b0;         //or
+		dataA = 8'b11111111;
+		dataB = 8'b00100100;
+		ALUOp = 5'b10101; 	
+		#50ns
+		c_i = 'b0;      //logical right shift
+		dataA = 8'b01110001;
+		dataB = 8'b00000000;
+		ALUOp = 5'b10001; 	
+		#50ns
+		c_i = 'b0;      //logical left shift
+		dataA = 8'b01110001;
+		dataB = 8'b00000000;
+		ALUOp = 5'b10011; 	
+		#50ns
 		c_i = 'b1;      //right shift with carry
 		dataA = 8'b01110001;
-		dataB = 8'b00100100;
+		dataB = 8'b00000000;
 		ALUOp = 5'b10010; 	
+		#50ns
+		c_i = 'b1;      //left shift with carry
+		dataA = 8'b01110001;
+		dataB = 8'b00000000;
+		ALUOp = 5'b10100; 	
+		#50ns
+		c_i = 'b0;      //compare (a == b)
+		dataA = 8'b01110001;
+		dataB = 8'b01110001;
+		ALUOp = 5'b00101; 	
+		#50ns
+		c_i = 'b0;      //compare (a > b)
+		dataA = 8'b01110001;
+		dataB = 8'b01110000;
+		ALUOp = 5'b00101; 	
+		#50ns
+		c_i = 'b0;      //compare (a < b)
+		dataA = 8'b01110001;
+		dataB = 8'b01110010;
+		ALUOp = 5'b00101; 	
+		#50ns
 		$stop;
 	end
 endmodule
