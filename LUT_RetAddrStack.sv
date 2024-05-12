@@ -16,12 +16,19 @@ module LUT_RetAddrStack #(parameter D=12,parameter STACK_DEPTH = 8)(
         	sp <= sp + 1;
       	end
      end 
-     else if (ret) begin
-     	if (sp > 0) begin
-        	sp <= sp - 1;
-     	end
-     end
-     assign target_out = (ret && sp >= 0) ? ReturnAddr_Stack[sp] : target_in;
+     if (ret && sp > 0) begin
+            sp <= sp - 1;  
+            target_out <= ReturnAddr_Stack[sp];  
+        end else if (!ret) begin
+            target_out <= target_in;  
+        end
    end
 
 endmodule
+
+// else if (ret) begin
+//      	if (sp > 0) begin
+//         	sp <= sp - 1;
+//      	end
+//      end
+//      assign target_out = (ret && sp >= 0) ? ReturnAddr_Stack[sp] : target_in;

@@ -1,5 +1,5 @@
 // cache memory/register file
-module register_file(
+module reg_file(
     input clk,
     input mode,
     input lea,

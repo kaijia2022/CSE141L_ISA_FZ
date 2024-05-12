@@ -1,6 +1,6 @@
 // sample top level design
 module top_level(
-  input        clk, reset, req, 
+  input        clk, reset, 
   output logic done);
   parameter 	D = 12,             // program counter width
     		A = 5;             		  // ALU command bit width
@@ -11,8 +11,7 @@ module top_level(
   logic[7:0]   	datA,datB,		  // from RegFile
 		rslt,               // alu output
               	immediate,
-		regfile_dat,
-		dat_out;
+		regfile_dat;
   logic 	modeQ,
 		c_i,   				  // shift/carry out from/to ALU
 		equalQ,
@@ -27,7 +26,7 @@ module top_level(
         ALUSrc;		              // immediate switch
   wire[A-1:0] opcode, ALUOp;
   wire[8:0]   mach_code;          // machine code
-  wire[2:0] reg1, reg2;    // address pointers to reg_file
+  wire[2:0] reg1, reg2, reg1_1;    // address pointers to reg_file
 // fetch subassembly
   PC #(.D(D)) 					  // D sets program counter width
      pc1 (.reset            ,
@@ -37,66 +36,74 @@ module top_level(
 
 // lookup table to facilitate jumps/branches
   PC_LUT #(.D(D))
-    pl1 (.addr  (prog_ctr),
-         .target(LUTout), 
-	 .jump);   
+    pl1 ( .addr(prog_ctr),
+          .target(LUTout), 
+	        .jump);   
 
   LUT_RetAddrStack #(.D(D))
     lras (.clk,
-	  .addr(prog_ctr),
-	  .target_in(LUTout),
-	  .call,
+          .addr(prog_ctr),
+          .target_in(LUTout),
+          .call,
           .ret,
- 	  .target_out(target));
+          .target_out(target));
  	  
 	
 // contains machine code
   instr_ROM ir1(.prog_ctr,
-               .mach_code);
+                .mach_code);
 //Decoder
-  Decoder dc(.mach_code,
-	     .mode,
-             .opcode,
-	     .reg1,
-	     .reg2,
-             .immediate);
+  Decoder dc( .mach_code,
+              .mode,
+              .opcode,
+              .reg1,
+              .reg2,
+              .immediate);
 // control
-  Control ctl1(.opcode,
-  .memRead, 
-  .memWrite, 
-  .regWrite, 
-  .memToReg, 
-  .jump,     
-  .call,
-  .ret,
-  .lea,
-  .mode,
-  .ALUOp);
+  Control ctl1( .opcode,
+                .memRead, 
+                .memWrite, 
+                .regWrite, 
+                .memToReg, 
+                .jump,     
+                .call,
+                .ret,
+                .lea,
+                .mode,
+                .ALUOp);
 
   reg_file rf1( .clk ,
-	        .mode,
-	       	.lea,
-              .reg_dest(reg1),
-              .reg_src(reg2),
-              .reg_write (reg1),
-		.data_in(regfile_dat),      // in place operation
-              .datA_out(datA),
-              .datB_out(datB)); 
+	              .mode,
+	       	      .lea,
+                .reg_dest(reg1),
+                .reg_src(reg2),
+                .reg_write(reg1),
+                .data_in(regfile_dat),
+                .immediate(immediate),
+                .write_enable(regWrite),
+                .data_out1(datA),
+                .data_out2(datB)); 
 
 
   alu alu1(.ALUOp(),
         .inA    (datA),
-	.inB    (datB),
-	.c_i,  
-	.rslt  ,
-	.c_o, .equal, .gt,.lt,.zero // input to sc register
-	);  
+        .inB    (datB),
+        .c_i,  
+        .rslt(rslt),
+        .c_o(c_o),
+        .equal,
+        .gt,
+        .lt,
+        .zero // input to sc register
+        );  
 
-  dat_mem dm1(	.dat_in(datB)  ,  // from reg_file
-             	.clk           ,
-		.wr_en  (memWrite), // stores
-		.addr   (datA),
-             	.dat_out());
+  dat_mem dm1(	.dat_in(datB),
+                .ALU_out(rslt),
+                .memToReg,
+                .clk           ,
+                .wr_en(memWrite), 
+                .addr(datA),
+                .dat_out(regfile_dat));
 
 // registered flags from ALU
   always_ff @(posedge clk) begin

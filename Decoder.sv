@@ -7,29 +7,32 @@ module Decoder #(parameter opwidth = 5,parameter regwidth = 3)(
   output logic[7:0] immediate);   // for up to 8 ALU operations
 
 always_comb begin
+	opcode = 0;
+    reg1 = 0;
+    reg2 = 0;
+    immediate = 0;
 	//reg-reg mode
 	if (!mode) begin
-		assign opcode = mach_code[8:4];
-		assign reg1 = {1'b0,mach_code[3:2]};
-		assign reg2 = {1'b0,mach_code[1:0]};
-
-		
+		opcode = mach_code[8:4];
+		reg1 = {1'b0,mach_code[3:2]};
+		reg2 = {1'b0,mach_code[1:0]};		
 	end
 	//reg-immediate mode
 	else begin
-		assign opcode = {3'b00,mach_code[8:6]};
-		assign reg1 = mach_code[5:3];
-		assign reg2 = mach_code[2:0];
+		opcode = {3'b00,mach_code[8:6]};
+		reg1 = mach_code[5:3];
+		reg2 = mach_code[2:0];
 		case(reg2)
-			'b000:	immediate = 'd0; 
-  			'b001:  immediate = 'd1;  
-			'b010:  immediate = 'd4; 
-			'b011:  immediate = 'd8; 
-			'b100:  immediate = 'd16;
-			'b101:  immediate = 'd32; 
-			'b110:  immediate = 'd64; 
-			'b111:  immediate = 'd127; 
-		 endcase         
+			3'b000:	 immediate = 8'd0; 
+  			3'b001:  immediate = 8'd1;  
+			3'b010:  immediate = 8'd4; 
+			3'b011:  immediate = 8'd8; 
+			3'b100:  immediate = 8'd16;
+			3'b101:  immediate = 8'd32; 
+			3'b110:  immediate = 8'd64; 
+			3'b111:  immediate = 8'd127; 
+			default: immediate = 0;  
+		endcase
 	end
 
 end
