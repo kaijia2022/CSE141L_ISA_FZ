@@ -1,0 +1,130 @@
+// assign RAS = mem[0]
+// assign RBS = maxDist
+// assign RCS = minDist
+
+MOV RBS 0
+MOV RCS 9999
+
+// RDS = i
+MOV RDS 0
+
+_outLoop
+    TOG
+
+    // RC1 = i_sum
+    ADD RAS RDS
+    MOV RC1 RAS
+
+    TOG
+
+    SHL RC1
+    SHL RC1
+    SHL RC1
+    SHL RC1
+
+    ADD RAS 1
+    ADD RC1 RAS
+
+    // RES = j
+    MOV RES 0
+    LEA RAS
+
+    _inLoop
+        TOG
+
+        // RC2 = j_sum
+        ADD RAS RES
+        MOV RC2 RAS
+
+        TOG
+
+        SHL RC2
+        SHL RC2
+        SHL RC2
+        SHL RC2
+
+        ADD RAS 1
+        ADD RC2 RAS
+
+        // RFS = dist
+        CMP RC1 RC2
+        JLT _lessThan
+            SUB RC1 RC2
+            MOV RFS RC1
+            JMP _endIf
+        _lessThan
+            SUB RC2 RC1
+            MOV RFS RC2
+        _endIf
+
+        CMP RFS RCS
+        JLT _lessThan2
+            JMP _endIf2
+        _lessThan2
+            MOV RCS RFS
+        _endIf2
+
+        CMP RFS RBS
+        JLT _lessThan3
+            MOV RCS RFS
+            JMP _endIf3
+        _lessThan3
+        _endIf3
+
+        // j += 2
+        ADD RES 2
+        CMP RES 64
+        JLT _inLoop
+
+    // i += 2
+    ADD RDS 2
+    CMP RDS 64
+    JLT _outLoop
+
+
+// assign RBS = maxDist
+// assign RCS = minDist
+// RDS is bit mask
+MOV RDS 0b11111111
+LEA RAS
+
+TOG
+
+ADD RAS 66
+MOV RES RCS
+
+TOG
+
+SHR RES
+SHR RES
+SHR RES
+SHR RES
+SHR RES
+SHR RES
+SHR RES
+SHR RES
+AND RES RDS
+MOV [RAS] RES
+ADD RAS 1
+AND RCS RDS
+MOV [RAS] RCS
+
+TOG
+ADD RAS 1
+MOV RES RBS
+
+TOG
+
+SHR RES
+SHR RES
+SHR RES
+SHR RES
+SHR RES
+SHR RES
+SHR RES
+SHR RES
+AND RES RDS
+MOV [RAS] RES
+ADD RAS 1
+AND RBS RDS
+MOV [RAS] RBS
