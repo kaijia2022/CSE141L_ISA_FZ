@@ -74,11 +74,13 @@ _outLoop
         // j += 2
         ADD RES 2
         CMP RES 64
+        LEA RAS
         JLT _inLoop
 
     // i += 2
     ADD RDS 2
     CMP RDS 64
+    LEA RAS
     JLT _outLoop
 
 
