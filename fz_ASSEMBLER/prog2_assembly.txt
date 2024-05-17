@@ -11,10 +11,9 @@ MOV [RAS] 9999
 TOG // mode 1
 MOV RC1 0
 LEA RAS
+TOG // mode 0
 
 _outLoop
-    TOG // mode 0
-
     // RBS = i_sum
     ADD RAS RDS
     MOV RBS RAS
@@ -32,9 +31,9 @@ _outLoop
     MOV RC2 0
     LEA RAS
 
+    TOG // mode 0
     _inLoop
-        TOG // mode 0
-
+        
         // RCS = j_sum
         ADD RAS RES
         MOV RCS RAS
@@ -93,6 +92,7 @@ _outLoop
         DEC RC2
         DEC RC2
         CMP RC2 0
+        TOG // mode 0
         JGT _inLoop
 
     // i -= 2
@@ -102,6 +102,7 @@ _outLoop
     DEC RC1
     DEC RC1
     CMP RC1 0
+    TOG // mode 0
     JGT _inLoop
 
 
