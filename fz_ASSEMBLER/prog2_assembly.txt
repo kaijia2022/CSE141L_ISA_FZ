@@ -1,0 +1,179 @@
+// assign RAS = mem[0]
+// assign mem[192] = maxDist
+// assign mem[193] = minDist
+
+LEA RAS
+MOV [RAS] 0
+ADD RAS 1
+MOV [RAS] 9999
+
+// RC1 = i
+TOG // mode 1
+MOV RC1 0
+LEA RAS
+TOG // mode 0
+
+_outLoop
+    // RBS = i_sum
+    ADD RAS RDS
+    MOV RBS RAS
+
+    SHL RBS
+    SHL RBS
+    SHL RBS
+    SHL RBS
+
+    ADD RAS 1
+    ADD RBS RAS
+
+    // RC2 = j
+    TOG // mode 1
+    MOV RC2 0
+    LEA RAS
+
+    TOG // mode 0
+    _inLoop
+        
+        // RCS = j_sum
+        ADD RAS RES
+        MOV RCS RAS
+
+        SHL RCS
+        SHL RCS
+        SHL RCS
+        SHL RCS
+
+        TOG // mode 1
+        ADD RAS 1
+        TOG // mode 0
+        ADD RCS RAS
+
+        // RDS = dist
+        CMP RBS RCS
+        JLT _lessThan
+            SUB RBS RCS
+            MOV RDS RBS
+            JMP _endIf
+        _lessThan
+            SUB RCS RBS
+            MOV RDS RCS
+        _endIf
+
+        // compare mem[192] with RDS
+        LEA RAS
+
+        TOG // mode 1
+        ADD RAS 6
+        ADD RAS 6
+        ADD RAS 6
+
+        TOG // mode 0
+        CMP RDS RAS
+        JLT _lessThan2
+            JMP _endIf2
+        _lessThan2
+            MOV RAS RDS
+        _endIf2
+
+        TOG // mode 1
+        ADD RAS 1
+
+        TOG // mode 0
+        CMP RDS RAS
+        JLT _lessThan3
+            MOV RAS RDS
+            JMP _endIf3
+        _lessThan3
+        _endIf3
+
+        // j -= 2
+        LEA RAS
+        TOG // mode 1
+        DEC RC2
+        DEC RC2
+        CMP RC2 0
+        TOG // mode 0
+        JGT _inLoop
+
+    // i -= 2
+    TOG // mode 0
+    LEA RAS
+    TOG // mode 1
+    DEC RC1
+    DEC RC1
+    CMP RC1 0
+    TOG // mode 0
+    JGT _inLoop
+
+
+// assign RC1 = maxDist
+// assign RC2 = minDist
+// assign mem[192] = maxDist
+// assign mem[193] = minDist
+// RES is bit mask
+
+TOG // mode 0
+MOV RDS 0b11111111
+
+LEA RAS
+
+TOG // mode 1
+ADD RAS 6
+ADD RAS 6
+ADD RAS 6
+
+MOV RC1 RAS
+ADD RAS 1
+MOV RC2 RAS
+
+TOG // mode 0
+LEA RAS
+
+TOG // mode 1
+ADD RAS 6
+ADD RAS 1
+ADD RAS 1
+
+MOV RBS RC1
+
+TOG // mode 0
+SHR RBS
+SHR RBS
+SHR RBS
+SHR RBS
+SHR RBS
+SHR RBS
+SHR RBS
+SHR RBS
+
+AND RBS RDS
+MOV [RAS] RBS
+
+TOG // mode 1
+ADD RAS 1
+MOV RBS RC1
+AND RBS RDS
+MOV [RAS] RBS
+
+ADD RAS 1
+
+MOV RCS RC2
+
+TOG // mode 0
+SHR RCS
+SHR RCS
+SHR RCS
+SHR RCS
+SHR RCS
+SHR RCS
+SHR RCS
+SHR RCS
+
+AND RCS RDS
+MOV [RAS] RCS
+
+TOG // mode 1
+ADD RAS 1
+MOV RCS RC2
+AND RCS RDS
+MOV [RAS] RCS
