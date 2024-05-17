@@ -1,132 +1,178 @@
 // assign RAS = mem[0]
-// assign RBS = maxDist
-// assign RCS = minDist
+// assign mem[192] = maxDist
+// assign mem[193] = minDist
 
-MOV RBS 0
-MOV RCS 9999
+LEA RAS
+MOV [RAS] 0
+ADD RAS 1
+MOV [RAS] 9999
 
-// RDS = i
-MOV RDS 0
+// RC1 = i
+TOG // mode 1
+MOV RC1 0
+LEA RAS
 
 _outLoop
-    TOG
+    TOG // mode 0
 
-    // RC1 = i_sum
+    // RBS = i_sum
     ADD RAS RDS
-    MOV RC1 RAS
+    MOV RBS RAS
 
-    TOG
-
-    SHL RC1
-    SHL RC1
-    SHL RC1
-    SHL RC1
+    SHL RBS
+    SHL RBS
+    SHL RBS
+    SHL RBS
 
     ADD RAS 1
-    ADD RC1 RAS
+    ADD RBS RAS
 
-    // RES = j
-    MOV RES 0
+    // RC2 = j
+    TOG // mode 1
+    MOV RC2 0
     LEA RAS
 
     _inLoop
-        TOG
+        TOG // mode 0
 
-        // RC2 = j_sum
+        // RCS = j_sum
         ADD RAS RES
-        MOV RC2 RAS
+        MOV RCS RAS
 
-        TOG
+        SHL RCS
+        SHL RCS
+        SHL RCS
+        SHL RCS
 
-        SHL RC2
-        SHL RC2
-        SHL RC2
-        SHL RC2
-
+        TOG // mode 1
         ADD RAS 1
-        ADD RC2 RAS
+        TOG // mode 0
+        ADD RCS RAS
 
-        // RFS = dist
-        CMP RC1 RC2
+        // RDS = dist
+        CMP RBS RCS
         JLT _lessThan
-            SUB RC1 RC2
-            MOV RFS RC1
+            SUB RBS RCS
+            MOV RDS RBS
             JMP _endIf
         _lessThan
-            SUB RC2 RC1
-            MOV RFS RC2
+            SUB RCS RBS
+            MOV RDS RCS
         _endIf
 
-        CMP RFS RCS
+        // compare mem[192] with RDS
+        LEA RAS
+
+        TOG // mode 1
+        ADD RAS 6
+        ADD RAS 6
+        ADD RAS 6
+
+        TOG // mode 0
+        CMP RDS RAS
         JLT _lessThan2
             JMP _endIf2
         _lessThan2
-            MOV RCS RFS
+            MOV RAS RDS
         _endIf2
 
-        CMP RFS RBS
+        TOG // mode 1
+        ADD RAS 1
+
+        TOG // mode 0
+        CMP RDS RAS
         JLT _lessThan3
-            MOV RCS RFS
+            MOV RAS RDS
             JMP _endIf3
         _lessThan3
         _endIf3
 
-        // j += 2
-        ADD RES 2
-        CMP RES 64
+        // j -= 2
         LEA RAS
-        JLT _inLoop
+        TOG // mode 1
+        DEC RC2
+        DEC RC2
+        CMP RC2 0
+        JGT _inLoop
 
-    // i += 2
-    ADD RDS 2
-    CMP RDS 64
+    // i -= 2
+    TOG // mode 0
     LEA RAS
-    JLT _outLoop
+    TOG // mode 1
+    DEC RC1
+    DEC RC1
+    CMP RC1 0
+    JGT _inLoop
 
 
-// assign RBS = maxDist
-// assign RCS = minDist
-// RDS is bit mask
+// assign RC1 = maxDist
+// assign RC2 = minDist
+// assign mem[192] = maxDist
+// assign mem[193] = minDist
+// RES is bit mask
+
+TOG // mode 0
 MOV RDS 0b11111111
+
 LEA RAS
 
-TOG
+TOG // mode 1
+ADD RAS 6
+ADD RAS 6
+ADD RAS 6
 
-ADD RAS 66
-MOV RES RCS
-
-TOG
-
-SHR RES
-SHR RES
-SHR RES
-SHR RES
-SHR RES
-SHR RES
-SHR RES
-SHR RES
-AND RES RDS
-MOV [RAS] RES
+MOV RC1 RAS
 ADD RAS 1
+MOV RC2 RAS
+
+TOG // mode 0
+LEA RAS
+
+TOG // mode 1
+ADD RAS 6
+ADD RAS 1
+ADD RAS 1
+
+MOV RBS RC1
+
+TOG // mode 0
+SHR RBS
+SHR RBS
+SHR RBS
+SHR RBS
+SHR RBS
+SHR RBS
+SHR RBS
+SHR RBS
+
+AND RBS RDS
+MOV [RAS] RBS
+
+TOG // mode 1
+ADD RAS 1
+MOV RBS RC1
+AND RBS RDS
+MOV [RAS] RBS
+
+ADD RAS 1
+
+MOV RCS RC2
+
+TOG // mode 0
+SHR RCS
+SHR RCS
+SHR RCS
+SHR RCS
+SHR RCS
+SHR RCS
+SHR RCS
+SHR RCS
+
 AND RCS RDS
 MOV [RAS] RCS
 
-TOG
+TOG // mode 1
 ADD RAS 1
-MOV RES RBS
-
-TOG
-
-SHR RES
-SHR RES
-SHR RES
-SHR RES
-SHR RES
-SHR RES
-SHR RES
-SHR RES
-AND RES RDS
-MOV [RAS] RES
-ADD RAS 1
-AND RBS RDS
-MOV [RAS] RBS
+MOV RCS RC2
+AND RCS RDS
+MOV [RAS] RCS
