@@ -19,9 +19,9 @@ map<string, string> OpcodeMap_RR0 = {
 	{"RET", "01100"},
 	{"NOP", "11111"},
 	{"TOG", "00000"},
-	{"LEA", "01000"},
 	{"JE","00011"},
 	{"JZ","00100"},
+	{"JUMP", "00110"},
 	{"CALL","01011"},
 };
 
@@ -33,12 +33,13 @@ map<string, string> OpcodeMap_RR1 = {
 	{"SHL","10011"},
 	{"SLC","10100"},
 	{"SHL","10011"},
+	{"LEA", "01000"},
 };
 
 map<string, string> OpcodeMap_RR2 = {
 	{"CMP", "00101"},
 	{"MOV", "00001"},
-	{"ADD", "01101"},
+	{"ADD", "00111"},
 	{"SUB", "01110"},
 	{"AND", "01111"},
 	{"XOR", "10000"},
@@ -68,6 +69,7 @@ map<string, string> OpcodeMap_RI1 = {
 map<string, string> OpcodeMap_RI2 = {
 	{"CMP", "101"},
 	{"MOV", "001"},
+	{"ADD", "111"},
 };
 
 map<string, string> registerMap_RI = {
@@ -91,7 +93,7 @@ map<string, string> immediateMap_RI = {
 	{"64", "110"},
 	{"127", "111"}
 };
-vector<string> jumpOpcodes = { "JZ","JE", "CALL" };
+vector<string> jumpOpcodes = { "JZ","JE", "CALL", "JUMP"};
 
 string generateMachineCode(const vector<pair<int, pair<string, vector<string>>>>& instructions, int idx) {
 	string result = "";
@@ -240,10 +242,10 @@ int main() {
 	// Parse assembly code
 	vector<pair<int, pair<string, vector<string>>>> instructions;
 	vector<pair<string, string>> lut;
-	parseAssembly("assemblycode.txt", instructions, lut);
+	parseAssembly("prog3_test.txt", instructions, lut);
 
 	// Translate to machine code and generate output files
-	ofstream machine_code("machine_code.txt");
+	ofstream machine_code("prog3_test_machine_code.txt");
 	ofstream Jump_Instructions("Jump_Instructions.txt");
 	ofstream offsets("offsets.txt");
 

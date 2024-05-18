@@ -1,0 +1,152 @@
+_storeResultSign:      //multiplicantAddr = 127 + 64 + 4
+	LEA RCS
+	TOG
+	MOV RDS 127
+	TOG
+	ADD RCS RDS
+	MOV RBS [RCS]  //RBS = Mask1
+	TOG
+	MOV RDS 64
+	TOG
+	ADD RCS RDS
+	TOG
+	MOV RDS 4
+	TOG
+	ADD RCS RDS  //RCS = MultiplicandAddr
+	MOV RAS [RCS] //RAS = multiplicand
+	AND RAS RBS
+	JZ _assignZero1
+	LEA RCS
+	TOG
+	MOV RDS 127
+	TOG
+	ADD RCS RDS
+	TOG
+	MOV RDS 64
+	TOG
+	ADD RCS RDS
+	MOV RBS [RCS] //RCS = Multiplicand_sign_addr
+	TOG 
+	MOV RCS 1
+	TOG
+	MOV [RBS] RCS
+	JUMP _multiplierSign
+	
+_assignZero1:
+	LEA RCS
+	TOG
+	MOV RDS 127
+	TOG
+	ADD RCS RDS
+	TOG
+	MOV RDS 64
+	TOG
+	ADD RCS RDS
+	MOV RBS [RCS] //RCS = Multiplicand_sign_addr
+	TOG 
+	MOV RCS 0
+	TOG
+	MOV [RBS] RCS
+	
+_multiplierSign:
+	LEA RCS
+	TOG
+	MOV RDS 127
+	MOV RAS 1
+	TOG
+	ADD RCS RDS
+	MOV RBS [RCS]  //RBS = Mask1
+	TOG
+	MOV RDS 64
+	TOG
+	ADD RCS RDS
+	TOG
+	MOV RDS 4
+	TOG
+	ADD RCS RDS  //RCS = MultiplicandAddr
+	ADD RCS RAS  //RAS = MultiplierAddr
+	MOV RAS [RCS] //RBS = Multiplier
+	AND RAS RBS
+	JZ _assignZero2
+	LEA RCS
+	TOG
+	MOV RDS 127
+	MOV RAS 1
+	TOG
+	ADD RCS RDS
+	TOG
+	MOV RDS 64
+	TOG
+	ADD RCS RDS  
+	ADD RCS RAS  //RCS = Multiplier_sign_addr
+	MOV [RCS] RAS
+	JUMP _resultSign
+
+_assignZero2:
+	LEA RCS
+	TOG
+	MOV RDS 127
+	MOV RAS 1
+	TOG
+	ADD RCS RDS
+	TOG
+	MOV RDS 64
+	TOG
+	ADD RCS RDS  
+	ADD RCS RAS  //RCS = Multiplier_sign_addr
+	TOG 
+	MOV RAS 0
+	TOG
+	MOV [RCS] RAS
+
+_resultSign:
+	LEA RCS
+	TOG
+	MOV RDS 127
+	TOG
+	ADD RCS RDS
+	TOG
+	MOV RDS 64
+	MOV RAS 1
+	TOG
+	ADD RCS RDS //RCS = Multiplicand_sign_addr
+	MOV RBS [RCS] //RBS = multiplicand_sign
+	ADD RCS RAS  //RCS = multiplier_sign_addr
+	MOV RDS [RCS] //RDS =  multiplier_sign
+	ADD RBS RDS
+	CMP RBS RAS
+	JE _assignNeg
+	LEA RCS
+	TOG
+	MOV RDS 127
+	TOG
+	ADD RCS RDS
+	TOG
+	MOV RDS 64
+	MOV RAS 1
+	MOV RBS 0
+	TOG
+	ADD RCS RAS
+	ADD RCS RAS //RBS = result_sign_addr
+	MOV [RCS] RBS
+	JUMP _endStoreResultAddr  
+
+_assignNeg:
+	LEA RCS
+	TOG
+	MOV RDS 127
+	TOG
+	ADD RCS RDS
+	TOG
+	MOV RDS 64
+	MOV RAS 1
+	TOG
+	ADD RCS RAS
+	ADD RCS RAS //RBS = result_sign_addr
+	MOV [RCS] RAS
+	
+_endStoreResultAddr:
+	RET
+	
+	
+	
