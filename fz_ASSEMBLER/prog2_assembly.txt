@@ -1,24 +1,3 @@
-1. Initialize variables:
-   - Initialize `min_diff` to a large value (e.g., 65535, the maximum value for a 16-bit integer).
-   - Initialize `max_diff` to 0.
-
-2. Loop through each element `i` in the array (from 0 to n-1):
-   - Loop through each element `j` in the array where j > i (to avoid repeated comparisons and self-comparison):
-     - Calculate the difference: `diff = abs(array[i] - array[j])`
-     - Update `min_diff` if `diff < min_diff`
-     - Update `max_diff` if `diff > max_diff`
-
-3. Store the results:
-   - Calculate `min_diff_MSB` = `min_diff` >> 8 (Right shift `min_diff` by 8 bits to extract the most significant byte)
-   - Calculate `min_diff_LSB` = `min_diff` & 255 (Bitwise AND with 255 to extract the least significant byte)
-   - Calculate `max_diff_MSB` = `max_diff` >> 8
-   - Calculate `max_diff_LSB` = `max_diff` & 255
-
-   - Store these values in memory:
-     - mem[66] = `min_diff_MSB`
-     - mem[67] = `min_diff_LSB`
-     - mem[68] = `max_diff_MSB`
-     - mem[69] = `max_diff_LSB`
 LEA RAS
 TOG // mode 1
 ADD RAS 64
