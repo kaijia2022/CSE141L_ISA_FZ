@@ -1,179 +1,325 @@
-// assign RAS = mem[0]
-// assign mem[192] = maxDist
-// assign mem[193] = minDist
+1. Initialize variables:
+   - Initialize `min_diff` to a large value (e.g., 65535, the maximum value for a 16-bit integer).
+   - Initialize `max_diff` to 0.
 
+2. Loop through each element `i` in the array (from 0 to n-1):
+   - Loop through each element `j` in the array where j > i (to avoid repeated comparisons and self-comparison):
+     - Calculate the difference: `diff = abs(array[i] - array[j])`
+     - Update `min_diff` if `diff < min_diff`
+     - Update `max_diff` if `diff > max_diff`
+
+3. Store the results:
+   - Calculate `min_diff_MSB` = `min_diff` >> 8 (Right shift `min_diff` by 8 bits to extract the most significant byte)
+   - Calculate `min_diff_LSB` = `min_diff` & 255 (Bitwise AND with 255 to extract the least significant byte)
+   - Calculate `max_diff_MSB` = `max_diff` >> 8
+   - Calculate `max_diff_LSB` = `max_diff` & 255
+
+   - Store these values in memory:
+     - mem[66] = `min_diff_MSB`
+     - mem[67] = `min_diff_LSB`
+     - mem[68] = `max_diff_MSB`
+     - mem[69] = `max_diff_LSB`
 LEA RAS
+TOG // mode 1
+ADD RAS 64
+ADD RAS 1
+ADD RAS 1
+MOV [RAS] 127
+ADD RAS 1
+MOV [RAS] 127
+ADD RAS 1
 MOV [RAS] 0
 ADD RAS 1
-MOV [RAS] 9999
+MOV [RAS] 0
 
-// RC1 = i
-TOG // mode 1
-MOV RC1 0
 LEA RAS
+LEA RBS
+LEA RCS
+TOG // mode 1
+ADD RAS 64
+ADD RAS 64
+ADD RAS 64 // mem[192] = LSB dist
+
+ADD RBS 64
+ADD RBS 64
+ADD RBS 64 
+ADD RBS 1 // mem[193] = MSB dist
+
+ADD RCS 64
+ADD RCS 64
+ADD RCS 64
+DEC RCS // mem[191] = progress1
+ 
+MOV RC1 32 // outter loop counter
+
 TOG // mode 0
+MOV [RAS] 127
+MOV [RBS] 0
+MOV [RCS] 0
 
-_outLoop
-    // RBS = i_sum
-    ADD RAS RDS
-    MOV RBS RAS
-
-    SHL RBS
-    SHL RBS
-    SHL RBS
-    SHL RBS
-
-    ADD RAS 1
-    ADD RBS RAS
-
-    // RC2 = j
+_outLoop:
     TOG // mode 1
-    MOV RC2 0
-    LEA RAS
-
+    MOV RC2 0 // inner loop counter
+    LEA RCS
+    ADD RCS 64
+    ADD RCS 64
+    ADD RCS 64
+    DEC RCS
+    DEC RCS // mem[190] = progress2 = 2(beginning)
+    MOV RDS 0
+    ADD RDS 1
+    ADD RDS 1
     TOG // mode 0
-    _inLoop
+    MOV [RCS] RDS
+    _inLoop:
+        LEA RAS 
+        LEA RBS
+        LEA RCS
+        LEA RDS
+        TOG // mode 1
+        ADD RAS 64
+        ADD RAS 64
+        ADD RAS 64
+        DEC RAS
+        MOV RBS 1
+        ADD RCS 64
+        ADD RCS 64
+        ADD RCS 64
+        DEC RCS
+        DEC RCS
+        MOV RDS 1
+        TOG // mode 0
+        MOV RAS [RAS]  // load progress1 MSB1
+        ADD RBS RAS     // LSB1
+        MOV RCS [RCS]  // load progress 2
+        ADD RCS RAS     // MSB2
+        ADD RDS RCS     // LSB2    
         
-        // RCS = j_sum
-        ADD RAS RES
-        MOV RCS RAS
+        MOV RAS [RAS]
+        MOV RBS [RBS]
+        MOV RCS [RCS]
+        MOV RDS [RDS] 
 
-        SHL RCS
-        SHL RCS
-        SHL RCS
-        SHL RCS
+        CMP RAS RCS     // check who is larger
+        JLT _lessThan1  // RAS < RCS
+        SUB RAS RCS     // MSB1 dist
 
+        CMP RBS RDS
+        JLT _lessThan2 // RBS < RDS
+        SUB RBS RDS  // RAS = msb dist, RBS = lsb dist
+        JUMP _endcomp1
+
+        _lessThan1:
+            SUB RCS RAS   // RCS = MSB
+            CMP RDS RBS     
+            JLT _lessThan3 // RDS < RBS
+            SUB RDS RBS     // RCS = msb dist, RDS = lsb dist
+            _endcomp2
+
+        _lessThan2:
+            SUB RDS RBS // RAS = msb dist, RDS = lsb dist
+            _endcomp3
+
+        _lessThan3:
+            SUB RBS RDS
+            TOG // mode 1
+            DEC RBS // RCS = msb dist, RBS = lsb dist
+            _endcomp4
+
+        _endComp1:
+            LEA RCS
+            LEA RDS
+            TOG // mode 1
+            ADD RCS 64
+            ADD RCS 64
+            ADD RCS 64 // mem[192] = LSB dist
+
+            ADD RDS 64
+            ADD RDS 64
+            ADD RDS 64 
+            ADD RDS 1 // mem[193] = MSB dist
+            TOG // mode 0
+            MOV [RCS] RBS
+            MOV [RDS] RAS
+            JUMP _compend
+
+        _endComp2:
+            LEA RAS
+            LEA RBS
+            TOG // mode 1
+            ADD RAS 64
+            ADD RAS 64
+            ADD RAS 64 // mem[192] = LSB dist
+
+            ADD RBS 64
+            ADD RBS 64
+            ADD RBS 64 
+            ADD RBS 1 // mem[193] = MSB dist
+            TOG // mode 0
+            MOV [RAS] RDS
+            MOV [RBS] RCS
+            JUMP _compend
+        
+        _endComp3:
+            LEA RCS
+            LEA RBS
+            TOG // mode 1
+            ADD RCS 64
+            ADD RCS 64
+            ADD RCS 64 // mem[192] = LSB dist
+
+            ADD RBS 64
+            ADD RBS 64
+            ADD RBS 64 
+            ADD RBS 1 // mem[193] = MSB dist
+            TOG // mode 0
+            MOV [RCS] RDS
+            MOV [RBS] RAS
+            JUMP _compend
+
+        _endComp4:
+            LEA RAS
+            LEA RDS
+            TOG // mode 1
+            ADD RAS 64
+            ADD RAS 64
+            ADD RAS 64 // mem[192] = LSB dist
+
+            ADD RDS 64
+            ADD RDS 64
+            ADD RDS 64 
+            ADD RDS 1 // mem[193] = MSB dist
+            TOG // mode 0
+            MOV [RAS] RBS
+            MOV [RDS] RCS
+            JUMP _compend
+
+        _compend:
+            LEA RAS
+            LEA RBS
+            LEA RCS
+            LEA RDS
+            TOG // mode 1
+            ADD RAS 64
+            ADD RAS 1
+            ADD RAS 1
+            ADD RBS 1
+            ADD RCS 64
+            ADD RCS 64
+            ADD RCS 64
+            ADD RDS 64
+            ADD RDS 64
+            ADD RDS 64 
+            ADD RDS 1
+            TOG // mode 0
+            ADD RBS RAS
+            MOV RAS [RAS]  // min_diff_MSB
+            MOV RBS [RBS]  // min_diff_LSB
+            MOV RCS [RCS]  // LSB dist
+            MOV RDS [RDS]  // MSB dist
+
+            CMP RDS RAS  
+            JLT _minLess // MSB dist < min_diff_MSB
+            SUB RAS RDS
+            JZ _minequal
+            JUMP _checkMax
+
+        _minequal:
+            CMP RCS RBS
+            JLT _minLess
+            JUMP _checkMax
+
+        _minLess:
+            LEA RAS
+            LEA RBS
+            TOG // mode 1
+            ADD RAS 64
+            ADD RAS 1
+            ADD RAS 1
+            ADD RBS 1
+            TOG // mode 0
+            ADD RBS RAS
+            MOV [RAS] RDS
+            MOV [RBS] RCS
+
+        _checkMax:
+            LEA RAS
+            LEA RBS
+            TOG // mode 1
+            ADD RAS 64
+            ADD RAS 4
+            ADD RBS 1
+            TOG // mode 0
+            ADD RBS RAS
+            MOV RAS [RAS]  // max_diff_MSB
+            MOV RBS [RBS]  // min_diff_LSB
+            CMP RAS RDS
+            JLT _maxLess
+            SUB RAS RDS
+            JZ _maxequal
+            JUMP _continue
+
+        _maxequal:
+            CMP RBS RCS
+            JLT _maxLess
+            JUMP _continue
+
+        _maxLess:
+            LEA RAS
+            LEA RBS
+            TOG // mode 1
+            ADD RAS 64
+            ADD RAS 4
+            ADD RBS 1
+            TOG // mode 0
+            ADD RBS RAS
+            MOV [RAS] RDS
+            MOV [RBS] RCS
+            JUMP _continue
+
+        _continue:
+            LEA RCS
+            TOG // mode 1
+            DEC RC2
+            DEC RC2
+            CMP RC2 0
+            JE _endinLoop
+
+            ADD RCS 64
+            ADD RCS 64
+            ADD RCS 64
+            DEC RCS
+            DEC RCS // mem[190] = progress2
+            MOV RAS 1
+
+            
+            TOG // mode 0
+            MOV RBS [RCS]
+            ADD RBS RAS
+            ADD RBS RAS
+            MOV [RCS] RBS
+            JUMP _inLoop
+
+    _endinLoop:
+        LEA RCS
         TOG // mode 1
-        ADD RAS 1
+        DEC RC1
+        DEC RC1
+        CMP RC1 0
+        JE _endoutLoop
+
+        ADD RCS 64
+        ADD RCS 64
+        ADD RCS 64
+        DEC RCS // mem[191] = progress1
+        MOV RAS 1
+        
         TOG // mode 0
-        ADD RCS RAS
+        MOV RBS [RCS]
+        ADD RBS RAS
+        ADD RBS RAS
+        MOV [RCS] RBS
+        JUMP _outLoop
 
-        // RDS = dist
-        CMP RBS RCS
-        JLT _lessThan
-            SUB RBS RCS
-            MOV RDS RBS
-            JMP _endIf
-        _lessThan
-            SUB RCS RBS
-            MOV RDS RCS
-        _endIf
+_endoutLoop:
 
-        // compare mem[192] with RDS
-        LEA RAS
-
-        TOG // mode 1
-        ADD RAS 6
-        ADD RAS 6
-        ADD RAS 6
-
-        TOG // mode 0
-        CMP RDS RAS
-        JLT _lessThan2
-            JMP _endIf2
-        _lessThan2
-            MOV RAS RDS
-        _endIf2
-
-        TOG // mode 1
-        ADD RAS 1
-
-        TOG // mode 0
-        CMP RDS RAS
-        JLT _lessThan3
-            MOV RAS RDS
-            JMP _endIf3
-        _lessThan3
-        _endIf3
-
-        // j -= 2
-        LEA RAS
-        TOG // mode 1
-        DEC RC2
-        DEC RC2
-        CMP RC2 0
-        TOG // mode 0
-        JGT _inLoop
-
-    // i -= 2
-    TOG // mode 0
-    LEA RAS
-    TOG // mode 1
-    DEC RC1
-    DEC RC1
-    CMP RC1 0
-    TOG // mode 0
-    JGT _inLoop
-
-
-// assign RC1 = maxDist
-// assign RC2 = minDist
-// assign mem[192] = maxDist
-// assign mem[193] = minDist
-// RES is bit mask
-
-TOG // mode 0
-MOV RDS 0b11111111
-
-LEA RAS
-
-TOG // mode 1
-ADD RAS 6
-ADD RAS 6
-ADD RAS 6
-
-MOV RC1 RAS
-ADD RAS 1
-MOV RC2 RAS
-
-TOG // mode 0
-LEA RAS
-
-TOG // mode 1
-ADD RAS 6
-ADD RAS 1
-ADD RAS 1
-
-MOV RBS RC1
-
-TOG // mode 0
-SHR RBS
-SHR RBS
-SHR RBS
-SHR RBS
-SHR RBS
-SHR RBS
-SHR RBS
-SHR RBS
-
-AND RBS RDS
-MOV [RAS] RBS
-
-TOG // mode 1
-ADD RAS 1
-MOV RBS RC1
-AND RBS RDS
-MOV [RAS] RBS
-
-ADD RAS 1
-
-MOV RCS RC2
-
-TOG // mode 0
-SHR RCS
-SHR RCS
-SHR RCS
-SHR RCS
-SHR RCS
-SHR RCS
-SHR RCS
-SHR RCS
-
-AND RCS RDS
-MOV [RAS] RCS
-
-TOG // mode 1
-ADD RAS 1
-MOV RCS RC2
-AND RCS RDS
-MOV [RAS] RCS

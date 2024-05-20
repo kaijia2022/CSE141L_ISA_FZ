@@ -42,6 +42,17 @@ _outLoop:
     TOG // mode 0
     MOV RAS [RBS]
     
+    LEA RDS
+    TOG // mode 1
+    ADD RDS 64
+    ADD RDS 64
+    ADD RDS 32 
+    DEC RDS // mem[159] = progress2
+    MOV RBS 1
+    ADD RBS 1
+    TOG // mode 0
+    MOV [RDS] RBS // initiate mem[159] = 2
+ 
     LEA RCS 
     TOG // mode 1
     ADD RCS 64
