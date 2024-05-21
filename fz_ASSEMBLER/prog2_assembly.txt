@@ -10,7 +10,7 @@ ADD RAS 1
 MOV [RAS] 0
 ADD RAS 1
 MOV [RAS] 0
-
+TOG // mode 0
 LEA RAS
 LEA RBS
 LEA RCS
@@ -28,14 +28,13 @@ ADD RCS 64
 ADD RCS 64
 ADD RCS 64
 DEC RCS // mem[191] = progress1
- 
-MOV RC1 32 // outter loop counter
 
-TOG // mode 0
+MOV RC1 32 // outter loop counter
 MOV [RAS] 127
 MOV [RBS] 0
 MOV [RCS] 0
 
+TOG // mode 0
 _outLoop:
     TOG // mode 1
     MOV RC2 0 // inner loop counter
@@ -280,6 +279,7 @@ _outLoop:
             JUMP _inLoop
 
     _endinLoop:
+        TOG // mode 0
         LEA RCS
         TOG // mode 1
         DEC RC1

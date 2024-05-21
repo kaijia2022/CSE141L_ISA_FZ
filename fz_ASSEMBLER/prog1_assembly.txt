@@ -116,7 +116,7 @@ _outLoop:
             TOG // mode 0
             AND RDS RAS
             JE _findOnes1
-            LSR RAS
+            SHR RAS
             TOG // mode 1
             DEC RES
             COM RES 0
@@ -125,7 +125,7 @@ _outLoop:
             JUMP _countOnes1
 
             _findOnes1:
-                LSR RAS
+                SHR RAS
                 TOG // mode 1
                 ADD RCS 1
                 TOG // mode 0
@@ -146,6 +146,7 @@ _outLoop:
                 JUMP _countOnes1
 
         _endCount1:
+            TOG // mode 0
             LEA RBS
             TOG // mode 1
             ADD RBS 64
@@ -201,7 +202,7 @@ _outLoop:
                 TOG // mode 0
                 AND RDS RAS
                 JE _findOnes1
-                LSR RAS
+                SHR RAS
                 TOG // mode 1
                 DEC RES
                 COM RES 0
@@ -210,7 +211,7 @@ _outLoop:
                 JUMP _countOnes2
 
                 _findOnes2:
-                    LSR RAS
+                    SHR RAS
                     TOG // mode 1
                     ADD RCS 1
                     TOG // mode 0

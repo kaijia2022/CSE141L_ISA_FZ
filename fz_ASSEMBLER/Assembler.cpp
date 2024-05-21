@@ -242,15 +242,16 @@ int main() {
 	// Parse assembly code
 	vector<pair<int, pair<string, vector<string>>>> instructions;
 	vector<pair<string, string>> lut;
-	parseAssembly("prog3_test.txt", instructions, lut);
+	parseAssembly("prog1_test.txt", instructions, lut);
 
 	// Translate to machine code and generate output files
-	ofstream machine_code("prog3_test_machine_code.txt");
+	ofstream machine_code("prog1_test_machine_code.txt");
 	ofstream Jump_Instructions("Jump_Instructions.txt");
 	ofstream offsets("offsets.txt");
 
 	for (int i = 0; i < instructions.size(); i++) {
 		string machineCode = generateMachineCode(instructions, i);
+		cout << "Line: " << i << endl;
 		machine_code << machineCode << endl;
 	}
 
