@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <stack>
+#include <algorithm>
 
 using namespace std;
 
@@ -23,6 +24,8 @@ map<string, string> OpcodeMap_RR0 = {
 	{"JZ","00100"},
 	{"JUMP", "00110"},
 	{"CALL","01011"},
+	{"JLT", "11001"},
+	{"JGT", "11010"}
 };
 
 map<string, string> OpcodeMap_RR1 = {
@@ -34,6 +37,7 @@ map<string, string> OpcodeMap_RR1 = {
 	{"SLC","10100"},
 	{"SHL","10011"},
 	{"LEA", "01000"},
+	{"ASR", "11000"}
 };
 
 map<string, string> OpcodeMap_RR2 = {
@@ -93,7 +97,7 @@ map<string, string> immediateMap_RI = {
 	{"64", "110"},
 	{"127", "111"}
 };
-vector<string> jumpOpcodes = { "JZ","JE", "CALL", "JUMP"};
+vector<string> jumpOpcodes = { "JZ","JE", "CALL", "JUMP", "JLT", "JGT"};
 
 string generateMachineCode(const vector<pair<int, pair<string, vector<string>>>>& instructions, int idx) {
 	string result = "";
@@ -126,6 +130,7 @@ string generateMachineCode(const vector<pair<int, pair<string, vector<string>>>>
 				result.append(registerMap_RI.at(operand1));
 				result.append(immediateMap_RI.at(operand2));
 			}
+
 			break;
 		}
 	}
@@ -164,6 +169,7 @@ string generateMachineCode(const vector<pair<int, pair<string, vector<string>>>>
 
 			break;
 		}
+
 	}
 	return result;
 
@@ -183,12 +189,20 @@ string generateLookupTableOffset(const vector<pair<string, string>> lut, int idx
 	return result;
 }
 
+bool existsInPairToRemove(const std::pair<int, std::string>& element, const std::vector<std::pair<int, std::string>>& pairToRemove) {
+	return std::find(pairToRemove.begin(), pairToRemove.end(), element) != pairToRemove.end();
+}
+
 void parseAssembly(const string& inputFile, vector<pair<int, pair<string, vector<string>>>>& instructions, vector<pair<string, string>>& lut) {
 	vector<pair<int, string>> jumpSrcDest;
+	vector<pair<int, string>> pairToRemove;
 	ifstream file(inputFile);
 	string line;
+	int srcmode = 0;
 	int mode = 0;
+	bool jumpDest;
 	while (getline(file, line)) {
+		jumpDest = 0;
 		stringstream ss(line);
 		string opcode;
 		ss >> opcode;
@@ -205,16 +219,19 @@ void parseAssembly(const string& inputFile, vector<pair<int, pair<string, vector
 			}
 		}
 		if (opcode[0] == '_') {
+			jumpDest = 1;
 			vector<int> sourceAddrs;
-			for (pair<int, string> pair : jumpSrcDest) {
-				if (opcode.find(pair.second) != string::npos) {
-					sourceAddrs.push_back(pair.first);
+			for (int i = 0; i < jumpSrcDest.size(); i++) {
+				pair<int, string> pr = jumpSrcDest[i];
+				if (opcode.find(pr.second) != string::npos) {
+					sourceAddrs.push_back(pr.first);
+					pairToRemove.push_back(pr);
 				}
 			}
 			for (int addr : sourceAddrs) {
-				string offset = to_string(instructions.size() + 1 - addr);
-				string jumpInstruction = generateMachineCode(instructions, addr);
-				mode = instructions[addr].first;
+				string offset = to_string(instructions.size() - addr);
+				string jumpInstruction = to_string(addr);
+				srcmode = instructions[addr].first;
 				lut.push_back(make_pair(jumpInstruction, offset));
 			}
 
@@ -234,24 +251,62 @@ void parseAssembly(const string& inputFile, vector<pair<int, pair<string, vector
 			}
 		}
 		
-		instructions.emplace_back(mode, make_pair(opcode, operands));
+		instructions.emplace_back((jumpDest)?srcmode:mode, make_pair(opcode, operands));
 	}
-}
+	
+	file.clear();
+	file.seekg(0, std::ios::beg);
+	jumpSrcDest.erase(
+		remove_if(
+			jumpSrcDest.begin(), jumpSrcDest.end(),
+			[&pairToRemove](const pair<int, string>& element) {
+				return existsInPairToRemove(element, pairToRemove);
+			}
+		),
+		jumpSrcDest.end()
+	);
+	line = "";
+	int idx = 0;
+	while (getline(file, line)) {
+		stringstream ss(line);
+		string opcode;
+		ss >> opcode;
+		if (opcode.empty()) {
+			continue;
+		}
+		if (opcode[0] == '_') {
+			vector<int> sourceAddrs;
+			for (int i = 0; i < jumpSrcDest.size(); i++) {
+				pair<int, string> pr = jumpSrcDest[i];
+				if (opcode.find(pr.second) != string::npos) {
+					sourceAddrs.push_back(pr.first);
+				}
+			}
+			for (int addr : sourceAddrs) {
+				string offset = to_string(idx - addr);
+				string jumpInstruction = to_string(addr);
+				lut.push_back(make_pair(jumpInstruction, offset));
+			}
+			continue;
+		}
+		idx++;
+	}
+	file.close();
+	}
 
 int main() {
 	// Parse assembly code
 	vector<pair<int, pair<string, vector<string>>>> instructions;
 	vector<pair<string, string>> lut;
-	parseAssembly("prog1_test.txt", instructions, lut);
+	parseAssembly("prog3_test.txt", instructions, lut);
 
 	// Translate to machine code and generate output files
-	ofstream machine_code("prog1_test_machine_code.txt");
+	ofstream machine_code("prog3_test_machine_code.txt");
 	ofstream Jump_Instructions("Jump_Instructions.txt");
 	ofstream offsets("offsets.txt");
 
 	for (int i = 0; i < instructions.size(); i++) {
 		string machineCode = generateMachineCode(instructions, i);
-		cout << "Line: " << i << endl;
 		machine_code << machineCode << endl;
 	}
 
