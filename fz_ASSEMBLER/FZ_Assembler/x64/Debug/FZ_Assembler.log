@@ -1,5 +1,7 @@
 ﻿  Assembler.cpp
-E:\CSE141L\FZ_Assembler\Assembler.cpp(108,18): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+E:\CSE141L\FZ_Assembler\Assembler.cpp(112,18): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+E:\CSE141L\FZ_Assembler\Assembler.cpp(240,57): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+E:\CSE141L\FZ_Assembler\Assembler.cpp(320,13): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\utility(278,16): warning C4267: 'initializing': conversion from 'size_t' to '_Ty1', possible loss of data
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\utility(278,16): warning C4267:         with
 C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\utility(278,16): warning C4267:         [
@@ -8,9 +10,9 @@ C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.3351
   (compiling source file 'Assembler.cpp')
   C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\include\utility(278,16):
   the template instantiation context (the oldest one first) is
-  	E:\CSE141L\FZ_Assembler\Assembler.cpp(246,35):
+  	E:\CSE141L\FZ_Assembler\Assembler.cpp(254,35):
   	see reference to function template instantiation 'std::pair<int,std::string>::pair<unsigned __int64,std::basic_string<char,std::char_traits<char>,std::allocator<char>>,0>(std::pair<unsigned __int64,std::basic_string<char,std::char_traits<char>,std::allocator<char>>> &&) noexcept' being compiled
-  		E:\CSE141L\FZ_Assembler\Assembler.cpp(246,25):
+  		E:\CSE141L\FZ_Assembler\Assembler.cpp(254,25):
   		see the first reference to 'std::pair<int,std::string>::pair' in 'parseAssembly'
   
   FZ_Assembler.vcxproj -> E:\CSE141L\FZ_Assembler\x64\Debug\FZ_Assembler.exe

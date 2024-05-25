@@ -6,8 +6,10 @@
 #include <map>
 #include <stack>
 #include <algorithm>
+#include <bitset>
 
 using namespace std;
+const int BIT_WIDTH = 12;
 
 const string PAD_RR0 = "0000";
 const string PAD_RR1 = "00";
@@ -15,6 +17,8 @@ const string PAD_RI0 = "000000";
 const string PAD_RI1 = "000";
 const string MOV_REG_2_MEM = "01001";
 const string MOV_MEM_2_REG = "01010";
+const int MAX_ROM_SIZE = 4096;
+const string NOP = "111110000";
 
 map<string, string> OpcodeMap_RR0 = {
 	{"RET", "01100"},
@@ -193,6 +197,10 @@ bool existsInPairToRemove(const std::pair<int, std::string>& element, const std:
 	return std::find(pairToRemove.begin(), pairToRemove.end(), element) != pairToRemove.end();
 }
 
+string decimalToBinary(int decimal) {
+	return std::bitset<BIT_WIDTH>(decimal).to_string();
+}
+
 void parseAssembly(const string& inputFile, vector<pair<int, pair<string, vector<string>>>>& instructions, vector<pair<string, string>>& lut) {
 	vector<pair<int, string>> jumpSrcDest;
 	vector<pair<int, string>> pairToRemove;
@@ -229,8 +237,8 @@ void parseAssembly(const string& inputFile, vector<pair<int, pair<string, vector
 				}
 			}
 			for (int addr : sourceAddrs) {
-				string offset = to_string(instructions.size() - addr);
-				string jumpInstruction = to_string(addr);
+				string offset = decimalToBinary(instructions.size() - addr);
+				string jumpInstruction = decimalToBinary(addr);
 				srcmode = instructions[addr].first;
 				lut.push_back(make_pair(jumpInstruction, offset));
 			}
@@ -283,8 +291,8 @@ void parseAssembly(const string& inputFile, vector<pair<int, pair<string, vector
 				}
 			}
 			for (int addr : sourceAddrs) {
-				string offset = to_string(idx - addr);
-				string jumpInstruction = to_string(addr);
+				string offset = decimalToBinary(idx - addr);
+				string jumpInstruction = decimalToBinary(addr);
 				lut.push_back(make_pair(jumpInstruction, offset));
 			}
 			continue;
@@ -308,6 +316,10 @@ int main() {
 	for (int i = 0; i < instructions.size(); i++) {
 		string machineCode = generateMachineCode(instructions, i);
 		machine_code << machineCode << endl;
+	}
+	for (int i = instructions.size(); i < MAX_ROM_SIZE; i++) {
+		string no_op = NOP;
+		machine_code << no_op << endl;
 	}
 
 	for (int i = 0; i < lut.size(); i++) {
