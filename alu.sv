@@ -9,7 +9,7 @@ module alu(
                equal, 
 		gt,
 		lt,
-	       zero     
+	       zero  
 );
 
 always_comb begin 
@@ -20,7 +20,7 @@ always_comb begin
   gt = 'b0;
   lt = 'b0;
   case(ALUOp)
-    5'b01101:  begin    //ADD 
+    5'b00111:  begin    //ADD 
       {c_o,rslt} = inA + inB + c_i;
       zero = !rslt;
     end
@@ -50,7 +50,7 @@ always_comb begin
     end
     5'b10101: begin// bitwise OR (mask)
 	  rslt = inA | inB;
-	  zero = !rslt;
+	  zero = !rslt;	
     end
     5'b10001: begin//Logic Shift Right
 	  {c_o,rslt} = {inA[0],1'b0, inA[7:1]};
@@ -62,17 +62,21 @@ always_comb begin
     end
     5'b10010: begin//Shift Right with Carry in
 	  {c_o,rslt} = {inA[0], c_i, inA[7:1]};
-	  zero = !rslt;
+	  zero = !rslt;;
     end
     5'b10100: begin//Shift Left with Carry in
 	  {c_o, rslt} = {inA[7], inA[6:0],c_i};
   	  zero = !rslt;
     end
+    5'b11000: begin//Arithmetic Shift Right
+	  {c_o,rslt} = {inA[0],inA[7], inA[7:1]};
+	  zero = !rslt;
+    end
     5'b00101: begin //compare
-	  equal = (inA == inB);
-          zero = (inA == inB);
- 	  gt = (inA > inB);
-	  lt = (inA < inB);
+	  equal = ( $signed(inA) == $signed(inB));
+          zero = ($signed(inA) == $signed(inB));
+ 	  gt = ($signed(inA) > $signed(inB));
+	  lt = ($signed(inA) < $signed(inB));
     end
   endcase
 end

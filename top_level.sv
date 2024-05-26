@@ -7,36 +7,39 @@ module top_level(
   wire[D-1:0] 	target, 			  // jump
 	      	LUTout, 
               	prog_ctr;
-  logic        	memRead,memWrite,regWrite, memToReg, jump, call,ret,lea,mode;
+  logic        	memRead,memWrite,regWrite, memToReg, regToReg, jump, call,ret,lea,mode;
   logic[7:0]   	datA,datB,		  // from RegFile
 		rslt,               // alu output
               	immediate,
 		regfile_dat;
-  logic 	modeQ,
-		c_i,   				  // shift/carry out from/to ALU
+  logic 	c_i,   				  // shift/carry out from/to ALU
 		equalQ,
 		gtQ,
 		ltQ,
-        	zeroQ;                    // registered zero flag from ALU 
-  wire  	equal,
+        	zeroQ;                   // registered zero flag from ALU 
+  logic  	equal,
 		gt,
 		lt,
         	zero,
 		c_o,
-        ALUSrc;		              // immediate switch
+        	//ALUSrc,   // immediate switch 
+		modeQ;		           
   wire[A-1:0] opcode, ALUOp;
   wire[8:0]   mach_code;          // machine code
-  wire[2:0] reg1, reg2, reg1_1;    // address pointers to reg_file
+  wire[2:0] reg1, reg2;    // address pointers to reg_file
+
+  logic [1:0] cycle_ctr;
 // fetch subassembly
   PC #(.D(D)) 					  // D sets program counter width
      pc1 (.reset            ,
          .clk              ,
 		 .target,
-		 .prog_ctr );
+		 .prog_ctr);
 
 // lookup table to facilitate jumps/branches
   PC_LUT #(.D(D))
-    pl1 ( .addr(prog_ctr),
+    pl1 ( .clk,
+	  .addr(prog_ctr),
           .target(LUTout), 
 	        .jump);   
 
@@ -54,22 +57,23 @@ module top_level(
                 .mach_code);
 //Decoder
   Decoder dc( .mach_code,
-              .mode,
+              .modeQ,
               .opcode,
               .reg1,
               .reg2,
-              .immediate);
+              .immediate,
+	      .mode);
 // control
   Control ctl1( .opcode,
                 .memRead, 
                 .memWrite, 
                 .regWrite, 
                 .memToReg, 
+		.regToReg,
                 .jump,     
                 .call,
                 .ret,
                 .lea,
-                .mode,
                 .ALUOp);
 
   reg_file rf1( .clk ,
@@ -81,41 +85,64 @@ module top_level(
                 .data_in(regfile_dat),
                 .immediate(immediate),
                 .write_enable(regWrite),
+		.regToReg,
                 .data_out1(datA),
                 .data_out2(datB)); 
 
 
-  alu alu1(.ALUOp(),
+  alu alu1(.ALUOp,
         .inA    (datA),
         .inB    (datB),
         .c_i,  
-        .rslt(rslt),
+        .rslt,
         .c_o(c_o),
-        .equal,
-        .gt,
-        .lt,
-        .zero // input to sc register
+        .equal(equalQ),
+        .gt(gtQ),
+        .lt(ltQ),
+        .zero(zeroQ) // input to sc register
         );  
 
-  dat_mem dm1(	.dat_in(datB),
+  dat_mem dm(	.dat_in(datB),
                 .ALU_out(rslt),
                 .memToReg,
                 .clk           ,
                 .wr_en(memWrite), 
                 .addr(datA),
                 .dat_out(regfile_dat));
-
 // registered flags from ALU
   always_ff @(posedge clk) begin
+	if (reset) begin
+		mode = 1'b0;
+		modeQ = 1'b0;
+		cycle_ctr = 2'b00;
+		zero = 1'b0;
+		equal = 1'b0;
+		gt = 1'b0;
+		lt = 1'b0;
+		c_o = 1'b0;
+	end
+	else begin
+		if (cycle_ctr == 2'b11) begin
+			cycle_ctr <= 2'b01;
+		end
+		else 
+			cycle_ctr <= cycle_ctr + 1;
+ 	end
 	zeroQ <= zero;
-	modeQ <= mode;
 	equalQ <= equal;
 	gtQ <= gt;
 	ltQ <= lt;
-	
+
       	c_i <= c_o;
   end
-
-  assign done = prog_ctr == 128;
+  always_ff @(negedge clk) begin
+	if(!reset) begin
+		if (cycle_ctr == 2'b11)
+			modeQ <= mode;
+	end
+  end
+  assign regWrite = (cycle_ctr=='b10) ? 0 : regWrite;
+  //assign modeQ = mode;
+  assign done = prog_ctr == 4096;
  
 endmodule

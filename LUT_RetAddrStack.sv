@@ -1,5 +1,5 @@
 module LUT_RetAddrStack #(parameter D=12,parameter STACK_DEPTH = 8)(
-  input logic  clk,
+  input  clk,
   input       [D-1:0] addr,	
   input       [D-1:0] target_in,	  
   input	      call,
@@ -19,9 +19,10 @@ module LUT_RetAddrStack #(parameter D=12,parameter STACK_DEPTH = 8)(
      if (ret && sp > 0) begin
             sp <= sp - 1;  
             target_out <= ReturnAddr_Stack[sp];  
-        end else if (!ret) begin
+     end 
+     else if (!ret) begin
             target_out <= target_in;  
-        end
+     end
    end
 
 endmodule

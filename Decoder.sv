@@ -1,21 +1,22 @@
 // control decoder
 module Decoder #(parameter opwidth = 5,parameter regwidth = 3)(
   input logic[8:0] mach_code,
-  input		mode,    
+  input	logic  modeQ,    
   output logic[opwidth-1:0] opcode,	
   output logic[regwidth-1:0] reg1, reg2,	
-  output logic[7:0] immediate);   // for up to 8 ALU operations
+  output logic[7:0] immediate,
+  output logic mode);   // for up to 8 ALU operations
 
 always_comb begin
-	opcode = 0;
     reg1 = 0;
     reg2 = 0;
     immediate = 0;
+    mode = modeQ;
 	//reg-reg mode
-	if (!mode) begin
+	if (!modeQ) begin
 		opcode = mach_code[8:4];
 		reg1 = {1'b0,mach_code[3:2]};
-		reg2 = {1'b0,mach_code[1:0]};		
+		reg2 = {1'b0,mach_code[1:0]};	
 	end
 	//reg-immediate mode
 	else begin
@@ -34,6 +35,9 @@ always_comb begin
 			default: immediate = 0;  
 		endcase
 	end
+	if (opcode == 5'b00000)
+		mode = !modeQ;	
+
 
 end
 	

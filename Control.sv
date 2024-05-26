@@ -1,33 +1,40 @@
 // control decoder
 module Control #(parameter opwidth = 5, Width = 5)(
-  input [opwidth-1:0] opcode,   
-  output logic memRead, memWrite, regWrite,memToReg, jump, call, ret,lea, mode,
+  input [opwidth-1:0] opcode,
+	
+  output logic memRead, memWrite, regWrite,memToReg, regToReg, jump, call, ret,lea,
   output logic[Width-1:0] ALUOp);	  
 
 always_comb begin
 	// defaults
-	memRead = 'b0;
-    memWrite = 'b0;
-    regWrite = 'b0;
-    memToReg = 'b0;
-    jump = 'b0;
-    call = 'b0;
-    ret = 'b0;
-    lea = 'b0;
-    mode = 'b0;
-    ALUOp = 'd0;
+    memRead = 1'b0;
+    memWrite = 1'b0;
+    regWrite = 1'b0;
+    memToReg = 1'b0;
+    regToReg = 1'b0;
+    jump = 1'b0;
+    call = 1'b0;
+    ret = 1'b0;
+    lea = 1'b0;
+    ALUOp = 5'b00000;
 
-	case(opcode)    
-		'b00000:  mode = !mode;      
-		'b01010: begin
-			memRead  = 'b1; 
-			memToReg = 'b1;
-			regWrite = 'b1;
-		end 
-		'b01001: memWrite = 'b1;                        
-		'b00011, 'b00100, 'b01011, 'b01100:    jump = 'b1;             //JE, JZ, CALL, RET
-		'b01000: lea = 'b1;
-		default: ALUOp = opcode;
+	case(opcode)       
+		'b01010: begin              //move mem to reg
+			memRead  = 1'b1; 
+			memToReg = 1'b1;
+			regWrite = 1'b1;
+		end                         
+		'b01001: memWrite = 1'b1;   //mov reg to mem
+		'b00001: begin regWrite = 1'b1;  regToReg = 1'b1; end//mov reg to reg                 
+		'b00011, 'b00100, 'b11001, 'b11010:   jump = 1'b1;         //JE, JZ, JGT, JLT
+		'b01011: begin call = 1'b1; jump = 1'b1;end
+		'b01100: begin ret = 1'b1; jump = 1'b1;end
+		'b01000: begin lea = 1'b1; regWrite = 1'b1;  end
+		'b00101:  ALUOp = opcode;                              //CMP, no writeback
+		default: begin
+			ALUOp = opcode;
+			regWrite = 1'b1;
+		end
 
 	endcase
 
