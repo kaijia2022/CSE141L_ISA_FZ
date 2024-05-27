@@ -25,8 +25,9 @@ module top_level(
         	//ALUSrc,   // immediate switch 
 		modeQ;		           
   wire[A-1:0] opcode, ALUOp;
-  wire[8:0]   mach_code;          // machine code
+  wire[8:0]   mach_code;           // machine code
   wire[2:0] reg1, reg2;    // address pointers to reg_file
+  logic[2:0] reg_wb;
 
   logic [1:0] cycle_ctr;
 // fetch subassembly
@@ -56,7 +57,8 @@ module top_level(
   instr_ROM ir1(.prog_ctr,
                 .mach_code);
 //Decoder
-  Decoder dc( .mach_code,
+  Decoder dc(   .clk,
+		.mach_code,
               .modeQ,
               .opcode,
               .reg1,
@@ -65,6 +67,7 @@ module top_level(
 	      .mode);
 // control
   Control ctl1( .opcode,
+		.stage(cycle_ctr),
                 .memRead, 
                 .memWrite, 
                 .regWrite, 
@@ -81,11 +84,12 @@ module top_level(
 	       	      .lea,
                 .reg_dest(reg1),
                 .reg_src(reg2),
-                .reg_write(reg1),
+                .reg_write(reg_wb),
                 .data_in(regfile_dat),
                 .immediate(immediate),
                 .write_enable(regWrite),
 		.regToReg,
+		.memToReg,
                 .data_out1(datA),
                 .data_out2(datB)); 
 
@@ -120,6 +124,7 @@ module top_level(
 		gt = 1'b0;
 		lt = 1'b0;
 		c_o = 1'b0;
+		reg_wb = 2'b00;
 	end
 	else begin
 		if (cycle_ctr == 2'b11) begin
@@ -130,9 +135,9 @@ module top_level(
  	end
 	zeroQ <= zero;
 	equalQ <= equal;
+	reg_wb <= reg1;
 	gtQ <= gt;
 	ltQ <= lt;
-
       	c_i <= c_o;
   end
   always_ff @(negedge clk) begin
@@ -141,7 +146,6 @@ module top_level(
 			modeQ <= mode;
 	end
   end
-  assign regWrite = (cycle_ctr=='b10) ? 0 : regWrite;
   //assign modeQ = mode;
   assign done = prog_ctr == 4096;
  

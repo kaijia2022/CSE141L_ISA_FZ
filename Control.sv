@@ -1,7 +1,7 @@
 // control decoder
 module Control #(parameter opwidth = 5, Width = 5)(
   input [opwidth-1:0] opcode,
-	
+  input [1:0] stage,
   output logic memRead, memWrite, regWrite,memToReg, regToReg, jump, call, ret,lea,
   output logic[Width-1:0] ALUOp);	  
 
@@ -18,7 +18,8 @@ always_comb begin
     lea = 1'b0;
     ALUOp = 5'b00000;
 
-	case(opcode)       
+	case(opcode)  
+		//'b00000: begin   end         //tog
 		'b01010: begin              //move mem to reg
 			memRead  = 1'b1; 
 			memToReg = 1'b1;
@@ -37,7 +38,16 @@ always_comb begin
 		end
 
 	endcase
-
+	//if(ALUOp != 5'b00000) begin
+		if (stage == 'b01) begin
+			regWrite = regWrite;
+		end
+   		else if (stage == 'b10) begin
+			regWrite = 1'b0;
+		end
+		else
+			regWrite = 1'b0;
+	//end
 end
 	
 endmodule

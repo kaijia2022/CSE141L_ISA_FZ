@@ -11,7 +11,7 @@ module dat_mem (
   logic[7:0] core[256];       // 2-dim array  8 wide  256 deep
 
 // reads are combinational; no enable or clock required
-  assign dat_out = memToReg? core[addr] : ALU_out;
+  assign dat_out = memToReg? core[addr]: ALU_out;
 
 // writes are sequential (clocked) -- occur on stores or pushes 
  always_ff @(posedge clk) begin
