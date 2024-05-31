@@ -1,16 +1,24 @@
 LEA RAS
-TOG // mode 1
+TOG  // mode 1
 ADD RAS 64
 ADD RAS 1
 ADD RAS 1
-MOV [RAS] 127
-ADD RAS 1
-MOV [RAS] 127
-ADD RAS 1
-MOV [RAS] 0
-ADD RAS 1
-MOV [RAS] 0
+MOV RBS 127
 TOG // mode 0
+MOV [RAS] RBS
+TOG // mode 1
+ADD RAS 1
+TOG // mode 0
+MOV [RAS] RBS
+TOG // mode 1
+ADD RAS 1
+MOV RBS 0
+TOG // mode 0
+MOV [RAS] RBS
+TOG // mode 1
+ADD RAS 1
+TOG // mode 0
+MOV [RAS] RBS
 LEA RAS
 LEA RBS
 LEA RCS
@@ -30,11 +38,16 @@ ADD RCS 64
 DEC RCS // mem[191] = progress1
 
 MOV RC1 32 // outter loop counter
-MOV [RAS] 127
-MOV [RBS] 0
-MOV [RCS] 0
-
+MOV RDS 127
+TOG
+MOV [RAS] RDS
+TOG
+MOV RDS 0
 TOG // mode 0
+MOV [RBS] RDS
+MOV [RCS] RDS
+
+
 _outLoop:
     TOG // mode 1
     MOV RC2 0 // inner loop counter
@@ -92,17 +105,16 @@ _outLoop:
             CMP RDS RBS     
             JLT _lessThan3 // RDS < RBS
             SUB RDS RBS     // RCS = msb dist, RDS = lsb dist
-            _endcomp2
+            JUMP _endcomp2
 
         _lessThan2:
             SUB RDS RBS // RAS = msb dist, RDS = lsb dist
-            _endcomp3
+            JUMP _endcomp3
 
         _lessThan3:
             SUB RBS RDS
-            TOG // mode 1
             DEC RBS // RCS = msb dist, RBS = lsb dist
-            _endcomp4
+            JUMP _endcomp4
 
         _endComp1:
             LEA RCS
@@ -270,13 +282,13 @@ _outLoop:
             DEC RCS // mem[190] = progress2
             MOV RAS 1
 
-            
             TOG // mode 0
             MOV RBS [RCS]
             ADD RBS RAS
             ADD RBS RAS
             MOV [RCS] RBS
             JUMP _inLoop
+            TOG
 
     _endinLoop:
         TOG // mode 0

@@ -119,6 +119,7 @@ _outLoop:
                 JE _endCount1
                 TOG 
                 JUMP _countOnes1
+                TOG
         _endCount1:
             TOG
             LEA RBS
@@ -243,6 +244,7 @@ _outLoop:
             JE _endinLoop
             TOG 
             JUMP _inLoop
+            TOG
     _endinLoop:
         TOG
         LEA RAS
