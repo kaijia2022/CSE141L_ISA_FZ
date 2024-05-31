@@ -8,7 +8,6 @@ module Decoder #(parameter opwidth = 5,parameter regwidth = 3)(
   output logic[7:0] immediate,
   output logic mode);   // for up to 8 ALU operations
  
-logic[7:0] imm;
 always_comb begin
     reg1 = 0;
     reg2 = 0;
@@ -26,15 +25,15 @@ always_comb begin
 		reg1 = mach_code[5:3];
 		reg2 = mach_code[2:0];
 		case(reg2)
-			3'b000:	 imm = 8'd0; 
-  			3'b001:  imm = 8'd1;  
-			3'b010:  imm = 8'd4; 
-			3'b011:  imm = 8'd8; 
-			3'b100:  imm = 8'd16;
-			3'b101:  imm = 8'd32; 
-			3'b110:  imm = 8'd64; 
-			3'b111:  imm = 8'd127; 
-			default: imm = 0;  
+			3'b000:	 immediate = 8'd0; 
+  			3'b001:  immediate = 8'd1;  
+			3'b010:  immediate = 8'd4; 
+			3'b011:  immediate = 8'd8; 
+			3'b100:  immediate = 8'd16;
+			3'b101:  immediate = 8'd32; 
+			3'b110:  immediate = 8'd64; 
+			3'b111:  immediate = 8'd127; 
+			default: immediate = 0;  
 		endcase
 	end
 	if (opcode == 5'b00000)
@@ -43,9 +42,5 @@ always_comb begin
 
 end
 
-
-	always_ff@(negedge clk) begin
-		immediate <= imm;
-	end
 	
 endmodule

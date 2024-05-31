@@ -7,7 +7,7 @@ module top_level(
   wire[D-1:0] 	target, 			  // jump
 	      	LUTout, 
               	prog_ctr;
-  logic        	memRead,memWrite,regWrite, memToReg, regToReg, jump, call,ret,lea,mode;
+  logic        	memRead,memWrite,regWrite, memToReg, regToMem, regToReg, jump, call,ret,lea,mode;
   logic[7:0]   	datA,datB,		  // from RegFile
 		rslt,               // alu output
               	immediate,
@@ -27,13 +27,13 @@ module top_level(
   wire[A-1:0] opcode, ALUOp;
   wire[8:0]   mach_code;           // machine code
   wire[2:0] reg1, reg2;    // address pointers to reg_file
-  logic[2:0] reg_wb;
 
   logic [1:0] cycle_ctr;
 // fetch subassembly
   PC #(.D(D)) 					  // D sets program counter width
      pc1 (.reset            ,
          .clk              ,
+		  .stage(cycle_ctr),
 		 .target,
 		 .prog_ctr);
 
@@ -46,6 +46,7 @@ module top_level(
 
   LUT_RetAddrStack #(.D(D))
     lras (.clk,
+	  .stage(cycle_ctr),
           .addr(prog_ctr),
           .target_in(LUTout),
           .call,
@@ -66,13 +67,19 @@ module top_level(
               .immediate,
 	      .mode);
 // control
-  Control ctl1( .opcode,
+  Control ctl1( .clk,
+		.opcode,
 		.stage(cycle_ctr),
+		.equalQ,
+		.zeroQ,
+		.gtQ,
+		.ltQ,
                 .memRead, 
                 .memWrite, 
                 .regWrite, 
                 .memToReg, 
 		.regToReg,
+		.regToMem,
                 .jump,     
                 .call,
                 .ret,
@@ -82,28 +89,29 @@ module top_level(
   reg_file rf1( .clk ,
 	              .mode,
 	       	      .lea,
+		.stage(cycle_ctr),
                 .reg_dest(reg1),
                 .reg_src(reg2),
-                .reg_write(reg_wb),
                 .data_in(regfile_dat),
                 .immediate(immediate),
                 .write_enable(regWrite),
 		.regToReg,
 		.memToReg,
+		.regToMem,
                 .data_out1(datA),
                 .data_out2(datB)); 
 
 
-  alu alu1(.ALUOp,
-        .inA    (datA),
-        .inB    (datB),
+  alu alu1(.clk, .ALUOp, .stage(cycle_ctr),
+        .inA(datA),
+        .inB(datB),
         .c_i,  
-        .rslt,
+        .out(rslt),
         .c_o(c_o),
-        .equal(equalQ),
-        .gt(gtQ),
-        .lt(ltQ),
-        .zero(zeroQ) // input to sc register
+        .equal(equal),
+        .gt(gt),
+        .lt(lt),
+        .zero(zero) // input to sc register
         );  
 
   dat_mem dm(	.dat_in(datB),
@@ -124,18 +132,25 @@ module top_level(
 		gt = 1'b0;
 		lt = 1'b0;
 		c_o = 1'b0;
-		reg_wb = 2'b00;
 	end
 	else begin
 		if (cycle_ctr == 2'b11) begin
+			cycle_ctr <= 2'b00;
+		end
+		else if (cycle_ctr == 2'b00) begin 
 			cycle_ctr <= 2'b01;
 		end
-		else 
-			cycle_ctr <= cycle_ctr + 1;
+		else if (cycle_ctr == 2'b01) begin
+			cycle_ctr <= 2'b10;
+		end
+		else begin
+			cycle_ctr <= 2'b11;
+		end
+			
+			
  	end
 	zeroQ <= zero;
 	equalQ <= equal;
-	reg_wb <= reg1;
 	gtQ <= gt;
 	ltQ <= lt;
       	c_i <= c_o;

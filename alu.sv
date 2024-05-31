@@ -1,17 +1,18 @@
 // combinational -- no clock
 // sample -- change as desired
 module alu(
+  input clk,
+  input[1:0] stage,
   input[4:0] ALUOp,    // ALU instructions
   input[7:0] inA, inB,	 // 8-bit wide data path
   input  logic    c_i,       // shift_carry in
-  output logic[7:0] rslt,
+  output logic[7:0] out,
   output logic c_o,    
                equal, 
 		gt,
 		lt,
-	       zero  
-);
-
+	       zero  );
+  logic[7:0] rslt;
 always_comb begin 
   rslt = 'b0;            
   c_o = 'b0;    
@@ -60,7 +61,7 @@ always_comb begin
 	  {c_o, rslt} = {inA[7], inA[6:0],1'b0};
 	  zero = !rslt;
     end
-    5'b10010: begin//Shift Right with Carry in
+    5'b10010: begin//Shift Right with Carry inE:/CSE141L/ISA_Design_FZ/alu.sv
 	  {c_o,rslt} = {inA[0], c_i, inA[7:1]};
 	  zero = !rslt;;
     end
@@ -79,6 +80,10 @@ always_comb begin
 	  lt = ($signed(inA) < $signed(inB));
     end
   endcase
+end
+always_ff@(negedge clk) begin
+	if(stage == 2'b01) 
+		out <= rslt;
 end
    
 endmodule
