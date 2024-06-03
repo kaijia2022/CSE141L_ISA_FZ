@@ -306,10 +306,10 @@ int main() {
 	// Parse assembly code
 	vector<pair<int, pair<string, vector<string>>>> instructions;
 	vector<pair<string, string>> lut;
-	parseAssembly("prog3_test.txt", instructions, lut);
+	parseAssembly("prog2_test.txt", instructions, lut);
 
 	// Translate to machine code and generate output files
-	ofstream machine_code("prog3_test_machine_code.txt");
+	ofstream machine_code("prog2_test_machine_code.txt");
 	ofstream Jump_Instructions("Jump_Instructions.txt");
 	ofstream offsets("offsets.txt");
 

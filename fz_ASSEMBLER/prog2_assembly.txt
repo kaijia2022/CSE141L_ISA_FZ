@@ -51,7 +51,9 @@ MOV [RCS] RDS
 _outLoop:
     TOG // mode 1
     MOV RC2 0 // inner loop counter
+    TOG
     LEA RCS
+    TOG
     ADD RCS 64
     ADD RCS 64
     ADD RCS 64

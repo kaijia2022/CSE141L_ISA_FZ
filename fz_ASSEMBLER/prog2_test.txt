@@ -43,11 +43,12 @@ MOV RDS 0
 TOG
 MOV [RBS] RDS
 MOV [RCS] RDS
-
 _outLoop:
     TOG 
     MOV RC2 0 
+    TOG
     LEA RCS
+    TOG
     ADD RCS 64
     ADD RCS 64
     ADD RCS 64
