@@ -1,7 +1,7 @@
 ﻿  Assembler.cpp
 D:\OneDrive\Study\HW\Spring 2024\CSE 141L\CSE141L_ISA_FZ\fz_ASSEMBLER\Assembler.cpp(112,18): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
 D:\OneDrive\Study\HW\Spring 2024\CSE 141L\CSE141L_ISA_FZ\fz_ASSEMBLER\Assembler.cpp(240,57): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-D:\OneDrive\Study\HW\Spring 2024\CSE 141L\CSE141L_ISA_FZ\fz_ASSEMBLER\Assembler.cpp(320,13): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\OneDrive\Study\HW\Spring 2024\CSE 141L\CSE141L_ISA_FZ\fz_ASSEMBLER\Assembler.cpp(321,13): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
 D:\VisualStudio\Community\VC\Tools\MSVC\14.39.33519\include\utility(278,16): warning C4267: 'initializing': conversion from 'size_t' to '_Ty1', possible loss of data
 D:\VisualStudio\Community\VC\Tools\MSVC\14.39.33519\include\utility(278,16): warning C4267:         with
 D:\VisualStudio\Community\VC\Tools\MSVC\14.39.33519\include\utility(278,16): warning C4267:         [
@@ -15,5 +15,4 @@ D:\VisualStudio\Community\VC\Tools\MSVC\14.39.33519\include\utility(278,16): war
   		D:\OneDrive\Study\HW\Spring 2024\CSE 141L\CSE141L_ISA_FZ\fz_ASSEMBLER\Assembler.cpp(254,25):
   		see the first reference to 'std::pair<int,std::string>::pair' in 'parseAssembly'
   
-  LINK : D:\OneDrive\Study\HW\Spring 2024\CSE 141L\CSE141L_ISA_FZ\fz_ASSEMBLER\x64\Debug\FZ_Assembler.exe not found or not built by the last incremental link; performing full link
   FZ_Assembler.vcxproj -> D:\OneDrive\Study\HW\Spring 2024\CSE 141L\CSE141L_ISA_FZ\fz_ASSEMBLER\x64\Debug\FZ_Assembler.exe

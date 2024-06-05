@@ -26,32 +26,25 @@ MOV RC1 32
 TOG 
 _outLoop:
     LEA RBS
-    TOG 
+    TOG
     ADD RBS 64
     ADD RBS 64
-    ADD RBS 32 
+    ADD RBS 32
     TOG
     MOV RAS [RBS]
     LEA RDS
-    TOG 
+    TOG
     ADD RDS 64
     ADD RDS 64
     ADD RDS 32 
     DEC RDS
-    MOV RBS 1
+    TOG
+    MOV RBS RAS
+    TOG
+    ADD RBS 1
     ADD RBS 1
     TOG
     MOV [RDS] RBS
-    LEA RCS 
-    TOG
-    ADD RCS 64
-    ADD RCS 64
-    ADD RCS 32
-    ADD RCS 1  
-    MOV RBS 0
-    MOV RC2 32
-    TOG 
-    MOV [RCS] RBS
     _inLoop:
         LEA RBS
         TOG 
@@ -68,58 +61,56 @@ _outLoop:
         DEC RDS 
         TOG
         MOV RCS [RDS]
-        ADD RCS RAS
-        TOG 
-        ADD RCS 1
-        ADD RCS 1
-        TOG 
         MOV RAS [RAS] 
         MOV RCS [RCS] 
         XOR RAS RCS
+	LEA RDS
+	TOG
+	ADD RDS 64
+	ADD RDS 64
+	ADD RDS 64
+	ADD RDS 32
+	TOG
+	MOV [RDS] RAS
         LEA RCS 
         TOG
-        ADD RCS 64
-        ADD RCS 64
-        ADD RCS 32
-        ADD RCS 1
-        TOG 
-        MOV RCS [RCS]
-        TOG
         MOV RES 8 
+	MOV RC1 0
         TOG 
         _countOnes1:
             TOG
             MOV RDS 1 
             TOG 
             AND RDS RAS
-            JE _findOnes1
-            SHR RAS
-            TOG 
-            DEC RES
-            CMP RES 0
-            JE _endCount1
-            TOG
-            JUMP _countOnes1
-            _findOnes1:
-                SHR RAS
+            JZ _notFound1
+            	SHR RAS
                 TOG 
                 ADD RCS 1
+		ADD RC1 1
                 TOG 
-                LEA RAS 
-                TOG
-                ADD RAS 64
-                ADD RAS 64
-                ADD RAS 32
-                ADD RAS 1
+                LEA RDS 
                 TOG 
-                MOV [RAS] RCS
+                ADD RDS 64
+                ADD RDS 64
+                ADD RDS 32
+                ADD RDS 1
+                TOG 
+                MOV [RDS] RCS
                 TOG 
                 DEC RES
                 CMP RES 0
                 JE _endCount1
                 TOG 
                 JUMP _countOnes1
-                TOG
+	    _notFound1:
+		SHR RAS
+            	TOG
+            	DEC RES
+            	CMP RES 0
+            	JE _endCount1
+           	TOG 
+            	JUMP _countOnes1
+                TOG 
         _endCount1:
             TOG
             LEA RBS
@@ -140,9 +131,7 @@ _outLoop:
             DEC RDS
             TOG 
             MOV RCS [RDS]
-            ADD RCS RAS
             TOG 
-            ADD RCS 1
             ADD RCS 1
             TOG
             MOV RAS [RAS] 
@@ -164,34 +153,37 @@ _outLoop:
                 MOV RDS 1
                 TOG 
                 AND RDS RAS
-                JE _findOnes1
+		JZ _notFound2
                 SHR RAS
+                TOG
+                ADD RCS 1
+		ADD RC1 1
+                TOG
+                LEA RDS 
+                TOG
+                ADD RDS 64
+                ADD RDS 64
+                ADD RDS 32
+                ADD RDS 1
+                TOG
+                MOV [RDS] RCS
                 TOG
                 DEC RES
                 CMP RES 0
                 JE _endCount2
                 TOG
                 JUMP _countOnes2
-                _findOnes2:
-                    SHR RAS
-                    TOG 
-                    ADD RCS 1
+		_notFound2:
+		    SHR RAS
                     TOG
-                    LEA RAS 
-                    TOG 
-                    ADD RAS 64
-                    ADD RAS 64
-                    ADD RAS 32
-                    ADD RAS 1
-                    TOG 
-                    MOV [RAS] RCS
-                    TOG 
                     DEC RES
                     CMP RES 0
                     JE _endCount2
-                    TOG 
+                    TOG
                     JUMP _countOnes2
+               	    TOG
         _endCount2:
+	    TOG
             LEA RAS
             LEA RBS
             TOG
@@ -215,14 +207,53 @@ _outLoop:
             MOV RCS [RCS]
             CMP RCS RAS
             JLT _lessThan
-            JUMP _gotoCMPpare
+            JUMP _gotocompare
         _lessThan:
+            LEA RAS
+	    LEA RCS
+	    TOG 
+	    ADD RAS 64
+            ADD RAS 64
+            ADD RAS 64
+	    ADD RCS 64
+            ADD RCS 64
+            ADD RCS 32
+            ADD RCS 1
+	    TOG 
+	    MOV RCS [RCS]
             MOV [RAS] RCS
-        _gotoCMPpare:
+        _gotocompare:
+            LEA RBS
+	    LEA RCS
+	    TOG 
+	    ADD RBS 64
+            ADD RBS 64
+            ADD RBS 64
+            ADD RBS 1 
+	    ADD RCS 64
+            ADD RCS 64
+            ADD RCS 32
+            ADD RCS 1
+	    TOG 
+	    MOV RBS [RBS]
+   	    MOV RCS [RCS]
             CMP RBS RCS
             JLT _greaterThan
             JUMP _gotonext
         _greaterThan:
+            LEA RBS
+	    LEA RCS
+	    TOG 
+	    ADD RBS 64
+            ADD RBS 64
+            ADD RBS 64
+            ADD RBS 1
+	    ADD RCS 64
+            ADD RCS 64
+            ADD RCS 32
+            ADD RCS 1
+	    TOG 
+	    MOV RCS [RCS]
             MOV [RBS] RCS
         _gotonext:
             LEA RDS
@@ -236,17 +267,15 @@ _outLoop:
             TOG 
             ADD RBS 1
             ADD RBS 1
-            TOG
+	    MOV RCS 64
+	    DEC RCS 
+	    DEC RCS
+	    TOG
+       	    CMP RBS RCS
+	    JGT _endinLoop
             MOV [RDS] RBS
-            TOG 
-            DEC RC2 
-            CMP RC2 0
-            JE _endinLoop
-            TOG 
             JUMP _inLoop
-            TOG
     _endinLoop:
-        TOG
         LEA RAS
         TOG
         ADD RAS 64
@@ -257,13 +286,15 @@ _outLoop:
         TOG 
         ADD RCS 1
         ADD RCS 1
+	MOV RBS 64
+	DEC RBS
+	DEC RBS
+	DEC RBS
+	DEC RBS
         TOG 
+	CMP RCS RBS
+	JGT _endoutLoop
         MOV [RAS] RCS
-        TOG 
-        DEC RC1
-        CMP RC1 0
-        JE _endoutLoop
-        TOG 
         JUMP _outLoop
 _endoutLoop:
     LEA RAS

@@ -162,6 +162,6 @@ module top_level(
 	end
   end
   //assign modeQ = mode;
-  assign done = prog_ctr == 4096;
+  assign done = prog_ctr == 4095;
  
 endmodule

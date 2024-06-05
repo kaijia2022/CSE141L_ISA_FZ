@@ -41,11 +41,11 @@ always_comb begin
 			if(zeroQ)
 				 jump = 1'b1;
 		end
-		'b11001:  begin   //JGT
+		'b11010:  begin   //JGT
 			if(gtQ)
 				 jump = 1'b1;
 		end
-		'b11010:  begin
+		'b11001:  begin
 			if(ltQ)
 				 jump = 1'b1;
 		end 
