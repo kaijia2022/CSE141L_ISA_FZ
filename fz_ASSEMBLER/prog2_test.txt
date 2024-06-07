@@ -1,31 +1,10 @@
 LEA RAS
-TOG 
-ADD RAS 64
-ADD RAS 1
-ADD RAS 1
-MOV RBS 127
-TOG 
-MOV [RAS] RBS
-TOG
-ADD RAS 1
-TOG
-MOV [RAS] RBS
-TOG
-ADD RAS 1
-MOV RBS 0
-TOG
-MOV [RAS] RBS
-TOG
-ADD RAS 1
-TOG
-MOV [RAS] RBS
-LEA RAS
 LEA RBS
 LEA RCS
 TOG 
 ADD RAS 64
 ADD RAS 64
-ADD RAS 64 
+ADD RAS 64
 ADD RBS 64
 ADD RBS 64
 ADD RBS 64 
@@ -40,21 +19,28 @@ TOG
 MOV [RAS] RDS
 TOG
 MOV RDS 0
-TOG
+TOG 
 MOV [RBS] RDS
 MOV [RCS] RDS
 _outLoop:
-    TOG 
-    MOV RC2 0 
+    TOG
+    MOV RC2 0
     TOG
     LEA RCS
+    LEA RDS
     TOG
+    ADD RDS 64
+    ADD RDS 64
+    ADD RDS 64
+    DEC RDS 
     ADD RCS 64
     ADD RCS 64
     ADD RCS 64
     DEC RCS
     DEC RCS 
-    MOV RDS 0
+    TOG 
+    MOV RDS [RDS]
+    TOG 
     ADD RDS 1
     ADD RDS 1
     TOG 
@@ -69,44 +55,155 @@ _outLoop:
         ADD RAS 64
         ADD RAS 64
         DEC RAS
-        MOV RBS 1
+        ADD RBS 1
         ADD RCS 64
         ADD RCS 64
         ADD RCS 64
         DEC RCS
         DEC RCS
-        MOV RDS 1
+        ADD RDS 1
         TOG 
         MOV RAS [RAS]  
         ADD RBS RAS     
         MOV RCS [RCS]  
-        ADD RCS RAS     
-        ADD RDS RCS  
+        ADD RDS RCS        
         MOV RAS [RAS]
         MOV RBS [RBS]
         MOV RCS [RCS]
         MOV RDS [RDS] 
-        CMP RAS RCS   
-        JLT _lessThan1 
-        SUB RAS RCS   
-        CMP RBS RDS
-        JLT _lessThan2 
-        SUB RBS RDS 
-        JUMP _endcomp1
-        _lessThan1:
-            SUB RCS RAS   
-            CMP RDS RBS     
-            JLT _lessThan3
-            SUB RDS RBS     
-            JUMP _endcomp2
-        _lessThan2:
-            SUB RDS RBS
-            JUMP _endcomp3
-        _lessThan3:
+        TOG
+        MOV RCS 0
+        TOG
+        CMP RAS RCS
+        JLT _ANeg
+        LEA RCS
+        TOG 
+        CMP RCS 0
+        ADD RCS 64
+        ADD RCS 64
+        ADD RCS 64
+        DEC RCS
+        DEC RCS
+        MOV RAS 0
+        TOG 
+        MOV RCS [RCS]
+        MOV RCS [RCS]
+        CMP RCS RAS
+        JLT _CNegAPos
+        JUMP _bothPos
+        _ANeg:
+            LEA RCS
+            TOG 
+            CMP RCS 0
+            ADD RCS 64
+            ADD RCS 64
+            ADD RCS 64
+            DEC RCS
+            DEC RCS
+            MOV RAS 0
+            TOG 
+            MOV RCS [RCS]
+            MOV RCS [RCS]
+            CMP RCS RAS
+            JLT _bothNeg     
+            JUMP _ANegCPos
+        _bothNeg:
+            LEA RAS
+            TOG 
+            ADD RAS 64
+            ADD RAS 64
+            ADD RAS 64
+            DEC RAS
+            TOG 
+            MOV RAS [RAS]
+            MOV RAS [RAS]
+            CMP RBS RDS     
+            JLT _negBLess
+            JUMP _negDLess 
+        _negBLess:
+            CMP RAS RCS   
+            JLT _bothLess1 
+            SUBS RAS RCS 
+            SUB RDS RBS 
+            JUMP _compEnd3
+        _bothLess1:
+            SUBS RCS RAS
             SUB RBS RDS
-            DEC RBS 
-            JUMP _endcomp4
-        _endcomp1:
+            DEC RCS  
+            JUMP _compEnd4
+        _negDLess:
+            CMP RAS RCS
+            JLT _negALess 
+            SUB RDS RBS   
+            SUBS RAS RCS
+            DEC RAS 
+            JUMP _compEnd3
+        _negALess:
+            SUBS RCS RAS
+            SUB RBS RDS 
+            JUMP _compEnd4
+        _ANegCPos: 
+            LEA RAS
+            TOG 
+            ADD RAS 64
+            ADD RAS 64
+            ADD RAS 64
+            DEC RAS
+            TOG 
+            MOV RAS [RAS]
+            MOV RAS [RAS]
+            SUBS RCS RAS
+            ADD RBS RDS 
+            JUMP _compEnd4
+        _CNegAPos:
+            LEA RAS
+            TOG 
+            ADD RAS 64
+            ADD RAS 64
+            ADD RAS 64
+            DEC RAS
+            TOG 
+            MOV RAS [RAS]
+            MOV RAS [RAS]
+            SUBS RAS RCS
+            ADD RDS RBS
+            JUMP _compEnd3
+        _bothPos:
+            LEA RAS
+            TOG 
+            ADD RAS 64
+            ADD RAS 64
+            ADD RAS 64
+            DEC RAS
+            TOG 
+            MOV RAS [RAS]
+            MOV RAS [RAS]
+            CMP RBS RDS 
+            JLT _posBLess
+            JUMP _posDLess
+        _posBLess:
+            CMP RAS RCS
+            JLT _bothLess2
+            SUB RBS RDS
+            DEC RAS
+            SUB RAS RCS  
+            JUMP _compEnd1
+        _bothLess2:
+            SUB RCS RAS  
+            SUB RDS RBS 
+            JUMP _compEnd2
+        _posDLess:
+            CMP RAS RCS
+            JLT _posALess
+            SUB RAS RCS
+            SUB RBS RDS 
+            JUMP _compEnd1
+        _posALess: 
+            SUB RCS RAS
+            DEC RCS 
+            SUB RDS RBS  
+            JUMP _compEnd2	  
+        _compEnd1:
             LEA RCS
             LEA RDS
             TOG
@@ -117,11 +214,11 @@ _outLoop:
             ADD RDS 64
             ADD RDS 64 
             ADD RDS 1 
-            TOG 
+            TOG
             MOV [RCS] RBS
             MOV [RDS] RAS
-            JUMP _compend
-        _endcomp2:
+            JUMP _compEndAll
+        _compEnd2:
             LEA RAS
             LEA RBS
             TOG
@@ -131,12 +228,12 @@ _outLoop:
             ADD RBS 64
             ADD RBS 64
             ADD RBS 64 
-            ADD RBS 1
-            TOG 
+            ADD RBS 1 
+            TOG
             MOV [RAS] RDS
             MOV [RBS] RCS
-            JUMP _compend
-        _endcomp3:
+            JUMP _compEndAll
+        _compEnd3:
             LEA RCS
             LEA RBS
             TOG 
@@ -146,32 +243,32 @@ _outLoop:
             ADD RBS 64
             ADD RBS 64
             ADD RBS 64 
-            ADD RBS 1
+            ADD RBS 1 
             TOG 
             MOV [RCS] RDS
             MOV [RBS] RAS
-            JUMP _compend
-        _endcomp4:
+            JUMP _compEndAll
+        _compEnd4:
             LEA RAS
             LEA RDS
-            TOG 
+            TOG
             ADD RAS 64
             ADD RAS 64
             ADD RAS 64 
             ADD RDS 64
             ADD RDS 64
             ADD RDS 64 
-            ADD RDS 1 
+            ADD RDS 1
             TOG 
             MOV [RAS] RBS
             MOV [RDS] RCS
-            JUMP _compend
-        _compend:
+            JUMP _compEndAll
+        _compEndAll:
             LEA RAS
             LEA RBS
             LEA RCS
             LEA RDS
-            TOG
+            TOG 
             ADD RAS 64
             ADD RAS 1
             ADD RAS 1
@@ -183,18 +280,18 @@ _outLoop:
             ADD RDS 64
             ADD RDS 64 
             ADD RDS 1
-            TOG 
+            TOG
             ADD RBS RAS
             MOV RAS [RAS]
-            MOV RBS [RBS] 
-            MOV RCS [RCS] 
-            MOV RDS [RDS]
+            MOV RBS [RBS]
+            MOV RCS [RCS]  
+            MOV RDS [RDS]  
             CMP RDS RAS  
-            JLT _minLess 
+            JLT _minLess
             SUB RAS RDS
-            JZ _minequal
+            JZ _minEqual
             JUMP _checkMax
-        _minequal:
+        _minEqual:
             CMP RCS RBS
             JLT _minLess
             JUMP _checkMax
@@ -217,23 +314,23 @@ _outLoop:
             ADD RAS 64
             ADD RAS 4
             ADD RBS 1
-            TOG 
+            TOG
             ADD RBS RAS
-            MOV RAS [RAS] 
-            MOV RBS [RBS]
+            MOV RAS [RAS]
+            MOV RBS [RBS] 
             CMP RAS RDS
             JLT _maxLess
             SUB RAS RDS
-            JZ _maxequal
+            JZ _maxEqual
             JUMP _continue
-        _maxequal:
+        _maxEqual:
             CMP RBS RCS
             JLT _maxLess
             JUMP _continue
         _maxLess:
             LEA RAS
             LEA RBS
-            TOG 
+            TOG
             ADD RAS 64
             ADD RAS 4
             ADD RBS 1
@@ -241,45 +338,48 @@ _outLoop:
             ADD RBS RAS
             MOV [RAS] RDS
             MOV [RBS] RCS
-            JUMP _continue
         _continue:
             LEA RCS
             TOG 
-            DEC RC2
-            DEC RC2
-            CMP RC2 0
-            JE _endinLoop
             ADD RCS 64
             ADD RCS 64
             ADD RCS 64
             DEC RCS
             DEC RCS 
-            MOV RAS 1
-            TOG 
-            MOV RBS [RCS]
-            ADD RBS RAS
-            ADD RBS RAS
-            MOV [RCS] RBS
-            JUMP _inLoop
+            MOV RBS 64
+            DEC RBS
+            DEC RBS 
             TOG
+            MOV RAS [RCS]
+            TOG
+            ADD RAS 1
+            ADD RAS 1
+            TOG 
+            CMP RAS RBS
+            JGT _endinLoop
+            MOV [RCS] RAS
+            JUMP _inLoop
     _endinLoop:
-        TOG
         LEA RCS
         TOG 
-        DEC RC1
-        DEC RC1
-        CMP RC1 0
-        JE _endoutLoop
         ADD RCS 64
         ADD RCS 64
         ADD RCS 64
         DEC RCS 
-        MOV RAS 1
+        MOV RBS 64
+        DEC RBS
+        DEC RBS
+        DEC RBS
+        DEC RBS 
         TOG 
-        MOV RBS [RCS]
-        ADD RBS RAS
-        ADD RBS RAS
-        MOV [RCS] RBS
+        MOV RAS [RCS]
+	    TOG 
+        ADD RAS 1
+        ADD RAS 1
+        TOG 
+        CMP RAS RBS
+        JGT _endoutLoop
+        MOV [RCS] RAS
         JUMP _outLoop
 _endoutLoop:
 NOP
