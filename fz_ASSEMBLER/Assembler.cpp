@@ -134,7 +134,6 @@ string generateMachineCode(const vector<pair<int, pair<string, vector<string>>>>
 				result.append(registerMap_RI.at(operand1));
 				result.append(immediateMap_RI.at(operand2));
 			}
-
 			break;
 		}
 	}
@@ -170,7 +169,6 @@ string generateMachineCode(const vector<pair<int, pair<string, vector<string>>>>
 			}
 			result.append(registerMap_RR.at(operand1));
 			result.append(registerMap_RR.at(operand2));
-
 			break;
 		}
 
@@ -306,17 +304,18 @@ int main() {
 	// Parse assembly code
 	vector<pair<int, pair<string, vector<string>>>> instructions;
 	vector<pair<string, string>> lut;
-	parseAssembly("prog1_test.txt", instructions, lut);
+	parseAssembly("prog2_test.txt", instructions, lut);
 
 	// Translate to machine code and generate output files
-	ofstream machine_code("prog1_test_machine_code.txt");
-	ofstream Jump_Instructions("prog1_Jump_Instructions.txt");
-	ofstream offsets("prog1_offsets.txt");
+	ofstream machine_code("prog2_test_machine_code.txt");
+	ofstream Jump_Instructions("prog2_Jump_Instructions.txt");
+	ofstream offsets("prog2_offsets.txt");
 
 	for (int i = 0; i < instructions.size(); i++) {
 		string machineCode = generateMachineCode(instructions, i);
 		machine_code << machineCode << endl;
 		cout << "line i: " << i << endl;
+		cout << "machine_code: " << machineCode << endl;
 	}
 	for (int i = instructions.size(); i < MAX_ROM_SIZE; i++) {
 		string no_op = NOP;

@@ -1,7 +1,7 @@
 ﻿  Assembler.cpp
 D:\OneDrive\Study\HW\Spring 2024\CSE 141L\CSE141L_ISA_FZ\fz_ASSEMBLER\Assembler.cpp(112,18): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-D:\OneDrive\Study\HW\Spring 2024\CSE 141L\CSE141L_ISA_FZ\fz_ASSEMBLER\Assembler.cpp(240,57): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-D:\OneDrive\Study\HW\Spring 2024\CSE 141L\CSE141L_ISA_FZ\fz_ASSEMBLER\Assembler.cpp(321,13): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\OneDrive\Study\HW\Spring 2024\CSE 141L\CSE141L_ISA_FZ\fz_ASSEMBLER\Assembler.cpp(238,57): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+D:\OneDrive\Study\HW\Spring 2024\CSE 141L\CSE141L_ISA_FZ\fz_ASSEMBLER\Assembler.cpp(320,13): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
 D:\VisualStudio\Community\VC\Tools\MSVC\14.39.33519\include\utility(278,16): warning C4267: 'initializing': conversion from 'size_t' to '_Ty1', possible loss of data
 D:\VisualStudio\Community\VC\Tools\MSVC\14.39.33519\include\utility(278,16): warning C4267:         with
 D:\VisualStudio\Community\VC\Tools\MSVC\14.39.33519\include\utility(278,16): warning C4267:         [
@@ -10,9 +10,9 @@ D:\VisualStudio\Community\VC\Tools\MSVC\14.39.33519\include\utility(278,16): war
   (compiling source file 'Assembler.cpp')
   D:\VisualStudio\Community\VC\Tools\MSVC\14.39.33519\include\utility(278,16):
   the template instantiation context (the oldest one first) is
-  	D:\OneDrive\Study\HW\Spring 2024\CSE 141L\CSE141L_ISA_FZ\fz_ASSEMBLER\Assembler.cpp(254,35):
+  	D:\OneDrive\Study\HW\Spring 2024\CSE 141L\CSE141L_ISA_FZ\fz_ASSEMBLER\Assembler.cpp(252,35):
   	see reference to function template instantiation 'std::pair<int,std::string>::pair<unsigned __int64,std::basic_string<char,std::char_traits<char>,std::allocator<char>>,0>(std::pair<unsigned __int64,std::basic_string<char,std::char_traits<char>,std::allocator<char>>> &&) noexcept' being compiled
-  		D:\OneDrive\Study\HW\Spring 2024\CSE 141L\CSE141L_ISA_FZ\fz_ASSEMBLER\Assembler.cpp(254,25):
+  		D:\OneDrive\Study\HW\Spring 2024\CSE 141L\CSE141L_ISA_FZ\fz_ASSEMBLER\Assembler.cpp(252,25):
   		see the first reference to 'std::pair<int,std::string>::pair' in 'parseAssembly'
   
   FZ_Assembler.vcxproj -> D:\OneDrive\Study\HW\Spring 2024\CSE 141L\CSE141L_ISA_FZ\fz_ASSEMBLER\x64\Debug\FZ_Assembler.exe

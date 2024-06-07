@@ -60,7 +60,8 @@ module test_bench2;
     #200ns wait (done);						 // avoid false done signals on startup
 
 // check results in data_mem[66:67] and [68:69] (Minimum and Maximum distances, respectively)
-    if(Min == {D1.dm.core[66],D1.dm.core[67]}) 
+    
+    if(Min == {D1.dm.core[66],D1.dm.core[69]}) 
                               $display("good Min = %d",Min);     // your DUT put correct answer into core[66:67]
 	else                      $display("fail Min = %d",Min);	 // your DUT put wrong answer into core[66:67]
                               $display("Min addr = %d, %d",Min1, Min2);
