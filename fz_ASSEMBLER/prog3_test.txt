@@ -29,10 +29,54 @@ _Prog3_OuterLoop:
 	TOG
 	MOV [RAS] RBS 
 	TOG
+	ADD RAS 1
 	ADD RAS 1   
+	TOG
+	MOV [RAS] RBS
+	TOG
+	DEC RAS 
 	MOV RC2 16
 	TOG
+	MOV RAS [RAS] 
+	MOV RBS RAS
+	MOV RCS RAS
+	MOV RDS RAS
+	TOG
+	ADD RBS 64
+	ADD RBS 1
+	ADD RBS 1  
+	ADD RCS 1
+	ADD RCS 1 
+	ADD RDS 1
+	ADD RDS 1
+	ADD RDS 1 
+	TOG
+	MOV RCS [RCS]
+	MOV RDS [RDS]   
+	MOV [RBS] RCS 
+	TOG
+	ADD RBS 1
+	TOG 
+	MOV [RBS] RDS
 _Prog3_InnerLoop:
+    LEA RBS
+	TOG
+	ADD RBS 127
+	ADD RBS 64
+	MOV RCS 0
+	ADD RBS 1
+	ADD RBS 1
+	TOG
+	MOV [RBS] RCS  
+	TOG
+	ADD RBS 1
+	TOG
+	MOV [RBS] RCS  
+	TOG
+	ADD RBS 1
+	ADD RBS 1
+	TOG
+	MOV [RBS] RCS  
 	CALL _rightShiftMultiplier
 	CALL _updateResult
 	TOG
@@ -40,14 +84,83 @@ _Prog3_InnerLoop:
 	JZ _Prog3_OuterLoop_Cont
 	TOG
 	JUMP _Prog3_InnerLoop
+	TOG
 _Prog3_OuterLoop_Cont:	
+	MOV RBS 0
+	ADD RBS 127
+	ADD RBS 64
+	ADD RBS 4  
+	TOG
+	MOV RAS [RBS] 
+	TOG 
+	MOV RBS 0
+	ADD RBS 127
+	ADD RBS 1   
+	TOG
+	MOV RCS [RAS]
+	SUB RBS RCS
+	JZ  _multiplicand_msb_128
+	NOP
+	JUMP _Prog3_OuterLoop_Next
+_multiplicand_msb_128:
+	TOG
+	ADD RAS 1   
+	TOG
+	MOV RCS [RAS] 
+	SUB RBS RCS
+	JZ _multiplicand_lsb_0
+	NOP
+	JUMP _Prog3_OuterLoop_Next
+_multiplicand_lsb_0:
+	COMP RCS       
+	TOG
+	MOV RDS 1
+	ADD RAS 1
+	ADD RAS 1  
+	ADD RAS 64
+	TOG
+	ADD RCS RDS  
+	SLC RBS       
+	MOV [RAS] RCS
+	DEC RAS  
+	LEA RDS
+	MOV RCS [RAS] 
+	COMP RCS
+	ADD RCS RBS   
+	SLC RDS
+	MOV [RAS] RCS
+	DEC RAS  
+	LEA RBS
+	MOV RCS [RAS] 
+	COMP RCS
+	ADD RCS RDS  
+	SLC RBS
+	MOV [RAS] RCS
+	DEC RAS  
+	LEA RDS
+	MOV RCS [RAS] 
+	COMP RCS
+	ADD RCS RBS 
+	MOV [RAS] RCS
+_Prog3_OuterLoop_Next:
+	TOG
+	MOV RBS 0     
+	ADD RBS 127
+	ADD RBS 64
+	ADD RBS 4  
+	TOG
+	MOV RAS [RBS]  
+	TOG
+	ADD RAS 4    
+	TOG
+	MOV [RBS] RAS   
 	TOG
 	DEC RC1
 	JZ _Prog3_End
 	TOG
 	JUMP _Prog3_OuterLoop
 _updateResult:	        
-	TOG
+	TOG 
 	MOV RBS 0
 	ADD RBS 127
 	ADD RBS 64 
@@ -56,41 +169,39 @@ _updateResult:
 	TOG
 	ADD RCS 1     
 	TOG
-	SUB RBS RCS
-	TOG
-	MOV RCS 1
-	TOG
-	CMP RBS RCS
-	JE _pattern10
-	TOG
-	MOV RBS 0
-	ADD RBS 127
-	ADD RBS 64  
-	TOG
-	MOV RCS RBS
-	TOG
-	ADD RCS 1    
-	TOG
 	MOV RBS [RBS]
-	MOV RCS [RCS]
+	MOV RCS [RCS]	
 	SUBS RBS RCS
 	TOG
 	MOV RCS 1
 	TOG
 	CMP RBS RCS
-	JE _pattern10
-	ADDS RBS RCS
-	JZ _pattern01
-	CALL _rightShiftResult
+	JE _pattern10_begin
+	TOG
+	MOV RBS 0
+	ADD RBS 127
+	ADD RBS 64 
+	TOG
+	MOV RCS RBS
+	TOG
+	ADD RCS 1 
+	TOG
+	MOV RBS [RBS]
+	MOV RCS [RCS]
+	SUBS RCS RBS
+	TOG
+	MOV RBS 1
+	TOG
+	CMP RBS RCS
+	JE _pattern01_begin
+	CALL _rightShiftResult_first2byte
 	RET	
-_pattern10:		
+_pattern10_begin:		
 	MOV RBS RAS
 	TOG
 	ADD RAS 1         
 	ADD RBS 64
 	ADD RBS 1
-	ADD RBS 1
-	ADD RBS 1    
 	TOG
 	MOV RCS [RAS]     
 	MOV RDS [RBS]   
@@ -103,17 +214,25 @@ _pattern10:
 	TOG
 	MOV RBS [RBS]
 	ADD RCS RBS  
-	CMP RDS RCS 
-	JLT _pattern10_Result1_setBorrow:
-	JUMP _pattern10_Result1
-_pattern01:		
+	JZ _pattern10_Result1_multiplicandPlusBorrow_0
+	CMPU RDS RCS 
+	JLT _pattern10_Result1_setBorrow
+	TOG
+	MOV RBS 0
+	MOV RCS 0
+	ADD RBS 127
+	ADD RBS 64
+	ADD RBS 1
+	ADD RBS 1
+	TOG
+	MOV [RBS] RCS
+	JUMP _pattern10_Result1_cont
+_pattern01_begin:		
 	MOV RBS RAS
 	TOG
 	ADD RAS 1     
 	ADD RBS 64
-	ADD RBS 1
-	ADD RBS 1
-	ADD RBS 1    
+	ADD RBS 1 
 	TOG
 	MOV RCS [RAS]    
 	MOV RDS [RBS]  
@@ -126,7 +245,7 @@ _pattern01:
 	ADD RBS 1
 	TOG
 	MOV RBS [RBS]   
-	ADDS RCS RDS             
+	ADD RCS RDS             
 	SLC RBS   
 	TOG
 	MOV RDS 0
@@ -140,8 +259,6 @@ _pattern01:
 	MOV RBS RAS
 	TOG   
 	ADD RBS 64
-	ADD RBS 1  
-	ADD RBS 1 
 	TOG
 	MOV [RBS] RCS    
 	DEC RAS
@@ -157,161 +274,32 @@ _pattern01:
 	ADD RBS 1
 	TOG
 	MOV RBS [RBS]       
-	ADDS RCS RBS    
-	SRC RBS                
-	JZ _CarryIsZero_1
-	TOG
-	MOV RBS 1   
-	TOG
-_CarryIsZero_1:
-	ADDS RCS RDS   
-	SLC RBS		
-	TOG
-	MOV RDS 0
-	ADD RDS 127
-	ADD RDS 64
-	ADD RDS 1
-	ADD RDS 1
-	ADD RDS 1
-	TOG
-	MOV [RDS] RBS  
-	MOV RDS RAS
-	TOG
-	ADD RDS 64
-	ADD RDS 1
-	ADD RDS 1      
-	TOG
-	MOV [RDS] RCS 
+	ADD RCS RBS  
+	ADD RCS RDS
 	MOV RBS RAS
-	TOG   
+	TOG
 	ADD RBS 64
-	ADD RBS 1
-	MOV RCS 0
-	ADD RCS 127
-	ADD RCS 1 
 	TOG
-	MOV RDS [RAS]   
-	MOV RCS [RCS]
-	AND RCS RDS
-	JZ _multiplicandPositive_01_1
-	JUMP _multiplicandNegative_01_1
-_multiplicandPositive_01_1:
-	TOG
-	MOV RCS 0
-	TOG
-	JUMP _pattern01_cont
-_multiplicandNegative_01_1:
-	TOG
-	MOV RCS 0
-	ADD RCS 127
-	ADD RCS 4
-	ADD RCS 1 
-	TOG
-	MOV RCS [RCS] 
-_pattern01_1_cont:
-	MOV RDS RAS
-	TOG
-	MOV RBS 0
-	ADD RBS 127
-	ADD RBS 64
-	ADD RBS 1
-	ADD RBS 1
-	ADD RBS 1
-	ADD RDS 64
-	ADD RDS 1
-	TOG
-	MOV RDS [RDS] 
-	MOV RBS [RBS]  
-	ADDS RDS RBS    
-	SRC RBS            
-	JZ _CarryIsZero_2
-	TOG
-	MOV RBS 1   
-	TOG
-_CarryIsZero_2:
-	ADDS RCS RDS   
-	SLC RBS		
-	TOG
-	MOV RDS 0
-	ADD RDS 127
-	ADD RDS 64
-	ADD RDS 1
-	ADD RDS 1
-	ADD RDS 1
-	TOG
-	MOV [RDS] RBS 
-	MOV RDS RAS
-	TOG
-	ADD RDS 64
-	ADD RDS 1      
-	TOG
-	MOV [RDS] RCS 
-	MOV RBS RAS
-	TOG   
-	ADD RBS 64
-	MOV RCS 0
-	ADD RCS 127
-	ADD RCS 1 
-	TOG
-	MOV RDS [RAS]    
-	MOV RCS [RCS]
-	AND RCS RDS
-	JZ _multiplicandPositive_01_2
-	JUMP _multiplicandNegative_01_2
-_multiplicandPositive_01_2:
-	TOG
-	MOV RCS 0
-	TOG
-	JUMP _pattern01_2_cont
-_multiplicandNegative_01_2:
-	TOG
-	MOV RCS 0
-	ADD RCS 127
-	ADD RCS 4
-	ADD RCS 1 
-	TOG
-	MOV RCS [RCS]  
-_pattern01_2_cont:
-	MOV RDS RAS
-	TOG
-	MOV RBS 0
-	ADD RBS 127
-	ADD RBS 64
-	ADD RBS 1
-	ADD RBS 1
-	ADD RBS 1
-	ADD RDS 64
-	TOG
-	MOV RDS [RDS]   
-	MOV RBS [RBS]   
-	ADDS RDS RBS    
-	SRC RBS           
-	JZ _CarryIsZero_3
-	TOG
-	MOV RBS 1
-	TOG   
-_CarryIsZero_3:
-	ADDS RCS RDS    
-	SLC RBS			
-	MOV RDS RAS
-	TOG
-	ADD RDS 64  
-	TOG
-	MOV [RDS] RCS	
+	MOV [RBS] RCS 
 	JUMP _updateResult_END	
+_pattern10_Result1_multiplicandPlusBorrow_0: 
+	LEA RCS
+	CMP RBS RCS
+	JE _pattern10_Result1_cont 
 _pattern10_Result1_setBorrow:
-	CALL _setBorrow
-_pattern10_Result1:
+	NOP
+	CALL _setBorrowValue
+_pattern10_Result1_cont:
 	MOV RBS RAS
 	TOG   
 	ADD RBS 64
-	TOG
+	TOG 
 	MOV RCS [RAS] 
 	MOV RDS [RBS]    
-	SUBS RDS RCS   
-	MOV [RBS] RDS    
+	SUB RDS RCS   
+	MOV [RBS] RDS 
 	DEC RAS                
-	DEC RBS
+	DEC RBS   
 	MOV RCS [RAS]    
 	MOV RDS [RBS]   
 	TOG
@@ -322,116 +310,15 @@ _pattern10_Result1:
 	ADD RBS 1
 	TOG
 	MOV RBS [RBS]           
-	ADD RCS RBS	
-	CMP RDS RCS
-	JLT _pattern10_Result2_setBorrow
-	JUMP _pattern10_Result2:	
-_pattern10_Result2_setBorrow:
-	CALL _setBorrow
-_pattern10_Result2:
+	SUB RDS RBS	
+	SUB RDS RCS  
 	MOV RBS RAS
-	TOG   
+	TOG         
 	ADD RBS 64
-	TOG   
-	MOV RDS [RBS]
-	SUBS RDS RCS   
-	MOV RCS [RAS] 
-	SUBS RDS RCS  
-	MOV [RBS] RDS                  
-	DEC RBS
-	TOG
-	MOV RCS 0
-	ADD RCS 127
-	ADD RCS 1   
-	TOG
-	MOV RCS  [RCS]   
-	MOV RDS [RAS]   
-	AND RCS RDS     
-	JZ _MultiplicandPositive_10_2
-	JUMP _MultiplicandNegative_10_2
-_MultiplicandPositive_10_2:
-	TOG
-	MOV RCS 0
-	TOG
-	JUMP _pattern10_Result2_cont
-_MultiplicandNegative_10_2:
-	TOG
-	MOV RCS 0
-	ADD RCS 127
-	ADD RCS 4
-	ADD RCS 1 
-	TOG
-	MOV RCS [RCS]   
-_pattern10_Result2_cont:	 
-	TOG
-	MOV RBS 0
-	ADD RBS 127
-	ADD RBS 64
-	ADD RBS 1
-	ADD RBS 1
-	TOG
-	MOV RBS [RBS]
-	ADD RCS RBS
-	CMP RDS RCS
-	JLT _pattern10_Result3_setBorrow
-	JUMP  _pattern10_Result3:
-_pattern10_Result3_setBorrow
-	CALL _setBorrow
- _pattern10_Result3:
-	MOV RBS RAS
-	TOG   
-	ADD RBS 64
-	TOG
-	DEC RBS 
-	MOV RDS [RBS]
-	SUBS RDS RCS 
-	MOV RCS [RAS] 
-	SUBS RDS RCS  
-	MOV [RBS] RDS                 
-	TOG
-	MOV RCS 0
-	ADD RCS 127
-	ADD RCS 1   
-	TOG
-	MOV RCS  [RCS]  
-	MOV RDS [RAS]   
-	AND RCS RDS     
-	JZ _MultiplicandPositive_10_3
-	JUMP _MultiplicandNegative_10_3
-_MultiplicandPositive_10_3:
-	TOG
-	MOV RCS 0
-	TOG
-	JUMP _pattern10_Result3_cont
-_MultiplicandNegative_10_3:
-	TOG
-	MOV RCS 0
-	ADD RCS 127
-	ADD RCS 4
-	ADD RCS 1 
-	TOG
-	MOV RCS [RCS]   
-_pattern10_Result3_cont:
-	TOG
-	MOV RBS 0
-	ADD RBS 127
-	ADD RBS 64
-	ADD RBS 1
-	ADD RBS 1
-	TOG
-	MOV RBS [RBS]
-	ADDS RCS RBS	
-	MOV RBS RAS
-	TOG   
-	ADD RBS 64
-	TOG 
-	DEC RBS
-	DEC RBS
-	MOV RDS [RBS]
-	SUBS RDS RCS    
-	MOV [RBS] RDS
+	TOG    
+	MOV [RBS] RDS                  	
 	JUMP _updateResult_END	
-_setBorrow:
+_setBorrowValue:
 	TOG
 	MOV RCS 0
 	ADD RCS 127
@@ -443,20 +330,20 @@ _setBorrow:
 	MOV [RCS] RDS          
 	RET
 _updateResult_END:
-	CALL _rightShiftResult
+	CALL _rightShiftResult_first2byte
 	RET	
-_rightShiftResult:  
+_rightShiftResult_first2byte:  
 	TOG
 	ADD RAS 64
-	MOV RCS 0
 	MOV RBS 0
+	MOV RCS 0
 	ADD RCS 127
 	ADD RCS 64
 	ADD RCS 32  
 	TOG
-	MOV RDS [RAS]	 
+	MOV RDS [RAS]	   
 	ASR  RDS                     
-	SRC RBS                      
+	SRC RBS                     
 	MOV [RAS] RDS
 	MOV [RCS] RBS
 	TOG
@@ -466,33 +353,27 @@ _rightShiftResult:
 	MOV RDS [RAS]	
 	SHR RDS		
 	SRC RBS
-	ADD RDS [RCS]	
+	MOV RCS [RCS]
+	ADD RDS RCS	
 	MOV [RAS] RDS              
-	MOV [RCS] RBS
 	TOG
 	ADD RAS 1
-	MOV RBS 0
 	TOG
 	MOV RDS [RAS]	
-	SHR RDS		
-	SRC RBS
-	ADD RDS [RCS]	
-	MOV [RAS] RDS              
-	MOV [RCS] RBS
+	ADD RDS RBS
+	MOV [RAS] RDS 
+	TOG           
+	MOV RBS 64         
 	TOG
-	ADD RAS 1
-	MOV RBS 0
-	TOG
-	MOV RDS [RAS]	
-	SHR RDS		
-	ADD RDS [RCS]	
-	MOV [RAS] RDS              
-	MOV [RCS] RBS
+	SUB RAS RBS    
+	DEC RAS
+	DEC RAS	
 	RET
 _rightShiftMultiplier:       
 	TOG
 	ADD RAS 1
 	ADD RAS 1 
+	ADD RAS 64
 	MOV RCS 0
 	MOV RBS 0
 	ADD RCS 127
@@ -500,7 +381,7 @@ _rightShiftMultiplier:
 	ADD RCS 32   
 	TOG
 	MOV RDS [RAS]	  
-	ASR  RDS                     
+	SHR  RDS                     
 	SRC RBS                      
 	MOV [RAS] RDS
 	MOV [RCS] RBS     
@@ -510,7 +391,7 @@ _rightShiftMultiplier:
 	TOG
 	MOV RDS [RAS]	
 	SHR RDS		
-	SRC RBS		
+	SLC RBS		
 	MOV RCS [RCS]	
 	ADD RDS RCS	
 	MOV [RAS] RDS
@@ -530,16 +411,30 @@ _rightShiftMultiplier:
 	TOG
 	ADD RDS  1	
 	TOG
+	MOV RCS [RCS]
 	MOV [RDS] RCS  
 	TOG
+	MOV RCS 0
+	ADD RCS 127
+	ADD RCS 64
 	MOV RDS 0
 	ADD RDS 127
 	ADD RDS 64 
-	ADD RDS 32   
+	ADD RDS 32 
 	TOG
+	MOV RDS [RDS]
 	MOV [RCS] RDS   
+	DEC RAS
+	DEC RAS
+	DEC RAS
+	TOG
+	MOV RBS 64
+	TOG
+	SUB RAS RBS 
 	RET
+	TOG
 _Prog3_End:
+	TOG
 	NOP
 	NOP
 	NOP

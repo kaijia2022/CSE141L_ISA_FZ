@@ -1,4 +1,17 @@
 LEA RAS
+TOG // mode 1
+ADD RAS 64
+ADD RAS 1
+ADD RAS 1
+MOV [RAS] 127
+ADD RAS 1
+MOV [RAS] 127
+ADD RAS 1
+MOV [RAS] 0
+ADD RAS 1
+MOV [RAS] 0
+TOG // mode 0
+LEA RAS
 LEA RBS
 LEA RCS
 TOG // mode 1
@@ -17,34 +30,21 @@ ADD RCS 64
 DEC RCS // mem[191] = progress1
 
 MOV RC1 32 // outter loop counter
-MOV RDS 127
-TOG
-MOV [RAS] RDS
-TOG
-MOV RDS 0
-TOG // mode 0
-MOV [RBS] RDS
-MOV [RCS] RDS
+MOV [RAS] 127
+MOV [RBS] 0
+MOV [RCS] 0
 
+TOG // mode 0
 _outLoop:
     TOG // mode 1
     MOV RC2 0 // inner loop counter
-    TOG // mode 0
     LEA RCS
-    LEA RDS
-    TOG // mode 1
-    ADD RDS 64
-    ADD RDS 64
-    ADD RDS 64
-    DEC RDS // mem[191] = progress1
     ADD RCS 64
     ADD RCS 64
     ADD RCS 64
     DEC RCS
     DEC RCS // mem[190] = progress2 = 2(beginning)
-    TOG // mode 0
-    MOV RDS [RDS]
-    TOG // mode 1
+    MOV RDS 0
     ADD RDS 1
     ADD RDS 1
     TOG // mode 0
@@ -59,176 +59,52 @@ _outLoop:
         ADD RAS 64
         ADD RAS 64
         DEC RAS
-        ADD RBS 1
+        MOV RBS 1
         ADD RCS 64
         ADD RCS 64
         ADD RCS 64
         DEC RCS
         DEC RCS
-        ADD RDS 1
+        MOV RDS 1
         TOG // mode 0
         MOV RAS [RAS]  // load progress1 MSB1
         ADD RBS RAS     // LSB1
         MOV RCS [RCS]  // load progress 2
+        ADD RCS RAS     // MSB2
         ADD RDS RCS     // LSB2    
         
         MOV RAS [RAS]
         MOV RBS [RBS]
         MOV RCS [RCS]
         MOV RDS [RDS] 
-	
-        TOG // mode 1
-        MOV RCS 0
-        TOG // mode 0
-        CMP RAS RCS
-        JLT _ANeg
-        
-        LEA RCS
-        TOG // mode 1
-        CMP RCS 0
-        ADD RCS 64
-        ADD RCS 64
-        ADD RCS 64
-        DEC RCS
-        DEC RCS
-        MOV RAS 0
-        TOG // mode 0
-        CMP RCS RAS
-        JLT _CNegAPos
-        JUMP _bothPos
 
-        _ANeg:
-            LEA RCS
-            TOG // mode 1
-            CMP RCS 0
-            ADD RCS 64
-            ADD RCS 64
-            ADD RCS 64
-            DEC RCS
-            DEC RCS
-            MOV RAS 0
-            TOG // mode 0
-            MOV RCS [RCS]
-            MOV RCS [RCS]
-            CMP RCS RAS
-            JLT _bothNeg     
-            JUMP _ANegCPos
+        CMP RAS RCS     // check who is larger
+        JLT _lessThan1  // RAS < RCS
+        SUB RAS RCS     // MSB1 dist
 
-        _bothNeg:
-            LEA RAS
-            TOG // mode 1
-            ADD RAS 64
-            ADD RAS 64
-            ADD RAS 64
-            DEC RAS
-            TOG // mode 0
-            MOV RAS [RAS]
-            MOV RAS [RAS]
-            CMP RBS RDS     // check who is larger
-            JLT _negBLess  // RBS < RDS
-            JUMP _negDLess // RBS > RDS
+        CMP RBS RDS
+        JLT _lessThan2 // RBS < RDS
+        SUB RBS RDS  // RAS = msb dist, RBS = lsb dist
+        JUMP _endcomp1
 
-        _negBLess:
-            CMP RAS RCS   
-            JLT _bothLess1 // RAS < RCS, RBS < RDS
-            // RAS > RCS, RBS < RDS 
-            SUBS RAS RCS 
+        _lessThan1:
+            SUB RCS RAS   // RCS = MSB
+            CMP RDS RBS     
+            JLT _lessThan3 // RDS < RBS
+            SUB RDS RBS     // RCS = msb dist, RDS = lsb dist
+            _endcomp2
+
+        _lessThan2:
             SUB RDS RBS // RAS = msb dist, RDS = lsb dist
-            JUMP _compEnd3
+            _endcomp3
 
-        _bothLess1:
-            SUBS RCS RAS
+        _lessThan3:
             SUB RBS RDS
-            DEC RCS  // RCS = msb dist, RBS = lsb dist
-            JUMP _compEnd4
-
-        _negDLess:
-            CMP RAS RCS
-            JLT _negALess // RAS < RCS, RBS > RDS
-            // RAS > RCS, RBS > RDS
-            SUB RDS RBS   
-            SUBS RAS RCS
-            DEC RAS // RAS = msb dist, RDS = lsb dist
-            JUMP _compEnd3
-
-        _negALess:
-            SUBS RCS RAS
-            SUB RBS RDS  // RCS = msb dist, RBS = lsb dist
-            JUMP _compEnd4
-
-        _ANegCPos:
-            LEA RAS
-            TOG 
-            ADD RAS 64
-            ADD RAS 64
-            ADD RAS 64
-            DEC RAS
-            TOG 
-            MOV RAS [RAS]
-            MOV RAS [RAS]
-            SUBS RCS RAS
-            ADD RBS RDS // RCS = msb dist, RBS = lsb dist
-            JUMP _compEnd4
-
-        _CNegAPos:
-            LEA RAS
             TOG // mode 1
-            ADD RAS 64
-            ADD RAS 64
-            ADD RAS 64
-            DEC RAS
-            TOG // mode 0
-            MOV RAS [RAS]
-            MOV RAS [RAS]
+            DEC RBS // RCS = msb dist, RBS = lsb dist
+            _endcomp4
 
-            SUBS RAS RCS
-            ADD RDS RBS // RAS = msb dist, RDS = lsb dist
-            JUMP _compEnd3
-
-        _bothPos:
-            LEA RAS
-            TOG // mode 1
-            ADD RAS 64
-            ADD RAS 64
-            ADD RAS 64
-            DEC RAS
-            TOG // mode 0
-            MOV RAS [RAS]
-            MOV RAS [RAS]
-
-            CMP RBS RDS 
-            JLT _posBLess
-            JUMP _posDLess
-
-        _posBLess:
-            CMP RAS RCS
-            JLT _bothLess2
-            // RAS > RCS, RBS < RDS
-            SUB RBS RDS
-            DEC RAS
-            SUB RAS RCS  // RAS = msb dist, RBS = lsb dist
-            JUMP _compEnd1
-
-        _bothLess2:	 // RAS < RCS, RBS < RDS
-            SUB RCS RAS  
-            SUB RDS RBS  // RCS = msb dist, RDS = lsb dist
-            JUMP _compEnd2
-
-        _posDLess:
-            CMP RAS RCS
-            JLT _posALess
-            // RAS > RCS, RBS > RDS
-            SUB RAS RCS
-            SUB RBS RDS  // RAS = msb dist, RBS = lsb dist
-            JUMP _compEnd1
-            
-        _posALess: // RAS < RCS, RBS > RDS
-            SUB RCS RAS
-            DEC RCS
-            SUB RDS RBS  // RCS = msb dist, RDS = lsb dist
-            JUMP _compEnd2	    
-
-        _compEnd1:
+        _endComp1:
             LEA RCS
             LEA RDS
             TOG // mode 1
@@ -243,9 +119,9 @@ _outLoop:
             TOG // mode 0
             MOV [RCS] RBS
             MOV [RDS] RAS
-            JUMP _compEndAll
+            JUMP _compend
 
-        _compEnd2:
+        _endComp2:
             LEA RAS
             LEA RBS
             TOG // mode 1
@@ -260,9 +136,9 @@ _outLoop:
             TOG // mode 0
             MOV [RAS] RDS
             MOV [RBS] RCS
-            JUMP _compEndAll
+            JUMP _compend
         
-        _compEnd3:
+        _endComp3:
             LEA RCS
             LEA RBS
             TOG // mode 1
@@ -277,9 +153,9 @@ _outLoop:
             TOG // mode 0
             MOV [RCS] RDS
             MOV [RBS] RAS
-            JUMP _compEndAll
+            JUMP _compend
 
-        _compEnd4:
+        _endComp4:
             LEA RAS
             LEA RDS
             TOG // mode 1
@@ -294,9 +170,9 @@ _outLoop:
             TOG // mode 0
             MOV [RAS] RBS
             MOV [RDS] RCS
-            JUMP _compEndAll
+            JUMP _compend
 
-        _compEndAll:
+        _compend:
             LEA RAS
             LEA RBS
             LEA RCS
@@ -323,10 +199,10 @@ _outLoop:
             CMP RDS RAS  
             JLT _minLess // MSB dist < min_diff_MSB
             SUB RAS RDS
-            JZ _minEqual
+            JZ _minequal
             JUMP _checkMax
 
-        _minEqual:
+        _minequal:
             CMP RCS RBS
             JLT _minLess
             JUMP _checkMax
@@ -358,10 +234,10 @@ _outLoop:
             CMP RAS RDS
             JLT _maxLess
             SUB RAS RDS
-            JZ _maxEqual
+            JZ _maxequal
             JUMP _continue
 
-        _maxEqual:
+        _maxequal:
             CMP RBS RCS
             JLT _maxLess
             JUMP _continue
@@ -377,50 +253,52 @@ _outLoop:
             ADD RBS RAS
             MOV [RAS] RDS
             MOV [RBS] RCS
+            JUMP _continue
 
         _continue:
             LEA RCS
             TOG // mode 1
+            DEC RC2
+            DEC RC2
+            CMP RC2 0
+            JE _endinLoop
+
             ADD RCS 64
             ADD RCS 64
             ADD RCS 64
             DEC RCS
             DEC RCS // mem[190] = progress2
-	        MOV RBS 64
-      	    DEC RBS
-	        DEC RBS // RBS = 62
+            MOV RAS 1
+
+            
             TOG // mode 0
-            MOV RAS [RCS]
-	        TOG // mode 1
-            ADD RAS 1
-            ADD RAS 1
-            TOG // mode 0
-	        CMP RAS RBS
-	        JGT _endinLoop
-	        MOV [RCS] RAS
+            MOV RBS [RCS]
+            ADD RBS RAS
+            ADD RBS RAS
+            MOV [RCS] RBS
             JUMP _inLoop
+
     _endinLoop:
+        TOG // mode 0
         LEA RCS
         TOG // mode 1
+        DEC RC1
+        DEC RC1
+        CMP RC1 0
+        JE _endoutLoop
+
         ADD RCS 64
         ADD RCS 64
         ADD RCS 64
         DEC RCS // mem[191] = progress1
-        MOV RBS 64
-        DEC RBS
-        DEC RBS
-        DEC RBS
-        DEC RBS // RBS = 60
+        MOV RAS 1
         
         TOG // mode 0
-        MOV RAS [RCS]
-	    TOG // mode 1
-        ADD RAS 1
-        ADD RAS 1
-        TOG // mode 0
-        CMP RAS RBS
-        JGT _endoutLoop
-        MOV [RCS] RAS
+        MOV RBS [RCS]
+        ADD RBS RAS
+        ADD RBS RAS
+        MOV [RCS] RBS
         JUMP _outLoop
+
 _endoutLoop:
-NOP
+

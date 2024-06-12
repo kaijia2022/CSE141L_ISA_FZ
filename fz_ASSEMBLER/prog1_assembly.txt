@@ -40,7 +40,7 @@ _outLoop:
     ADD RBS 32 // mem[160] = progress1
 
     TOG // mode 0
-    MOV RAS [RBS] // RAS = progress1
+    MOV RAS [RBS]
     
     LEA RDS
     TOG // mode 1
@@ -48,13 +48,22 @@ _outLoop:
     ADD RDS 64
     ADD RDS 32 
     DEC RDS // mem[159] = progress2
-    TOG // mode 0
-    MOV RBS RAS
-    TOG
-    ADD RBS 1
+    MOV RBS 1
     ADD RBS 1
     TOG // mode 0
     MOV [RDS] RBS // initiate mem[159] = 2
+ 
+    LEA RCS 
+    TOG // mode 1
+    ADD RCS 64
+    ADD RCS 64
+    ADD RCS 32
+    ADD RCS 1  
+    MOV RBS 0 // mem[161] = ones counter
+    MOV RC2 32
+
+    TOG // mode 0
+    MOV [RCS] RBS
 
     _inLoop:
         LEA RBS
@@ -75,26 +84,30 @@ _outLoop:
 
         TOG // mode 0
         MOV RCS [RDS]
+        ADD RCS RAS
 
+        TOG // mode 1
+        ADD RCS 1
+        ADD RCS 1
+
+        TOG // mode 0
         MOV RAS [RAS] // MSB1
         MOV RCS [RCS] // MSB2
 
         XOR RAS RCS
-	
-	LEA RDS // test
-	TOG // mode 1
-	ADD RDS 64
-	ADD RDS 64
-	ADD RDS 64
-	ADD RDS 32
-	TOG // mode 0
-	MOV [RDS] RAS
-	
-        LEA RCS // RCS = ones counter 
+
+        LEA RCS 
+        TOG // mode 1
+        ADD RCS 64
+        ADD RCS 64
+        ADD RCS 32
+        ADD RCS 1
+
+        TOG // mode 0
+        MOV RCS [RCS] // RCS = ones counter 
 
         TOG // mode 1
         MOV RES 8 
-	MOV RC1 0
 
         TOG // mode 0
         _countOnes1:
@@ -102,36 +115,36 @@ _outLoop:
             MOV RDS 1 // bitmask
             TOG // mode 0
             AND RDS RAS
-            JZ _notFound1
-            	SHR RAS
+            JE _findOnes1
+            SHR RAS
+            TOG // mode 1
+            DEC RES
+            COM RES 0
+            JE _endCount1
+            TOG // mode 0
+            JUMP _countOnes1
+
+            _findOnes1:
+                SHR RAS
                 TOG // mode 1
-		ADD RC1 1
                 ADD RCS 1
                 TOG // mode 0
                 // save RCS ones counter
-                LEA RDS 
+                LEA RAS 
                 TOG // mode 1
-                ADD RDS 64
-                ADD RDS 64
-                ADD RDS 32
-                ADD RDS 1
+                ADD RAS 64
+                ADD RAS 64
+                ADD RAS 32
+                ADD RAS 1
                 TOG // mode 0
-                MOV [RDS] RCS
+                MOV [RAS] RCS
                 TOG // mode 1
                 DEC RES
-                CMP RES 0
+                COM RES 0
                 JE _endCount1
                 TOG // mode 0
                 JUMP _countOnes1
-	    _notFound1:
-		SHR RAS
-            	TOG // mode 1
-            	DEC RES
-            	CMP RES 0
-            	JE _endCount1
-           	TOG // mode 0
-            	JUMP _countOnes1
-                TOG // mode 1
+
         _endCount1:
             TOG // mode 0
             LEA RBS
@@ -157,8 +170,10 @@ _outLoop:
 
             TOG // mode 0
             MOV RCS [RDS]
+            ADD RCS RAS
 
             TOG // mode 1
+            ADD RCS 1
             ADD RCS 1
 
             TOG // mode 0
@@ -186,38 +201,37 @@ _outLoop:
                 MOV RDS 1 // bitmask
                 TOG // mode 0
                 AND RDS RAS
-                JZ _notFound2
+                JE _findOnes1
                 SHR RAS
                 TOG // mode 1
-                ADD RCS 1
-		ADD RC1 1
-                TOG // mode 0
-                // save RCS ones counter
-                LEA RDS 
-                TOG // mode 1
-                ADD RDS 64
-                ADD RDS 64
-                ADD RDS 32
-                ADD RDS 1
-                TOG // mode 0
-                MOV [RDS] RCS
-                TOG // mode 1
                 DEC RES
-                CMP RES 0
+                COM RES 0
                 JE _endCount2
                 TOG // mode 0
                 JUMP _countOnes2
-		_notFound2:
-		    SHR RAS
+
+                _findOnes2:
+                    SHR RAS
+                    TOG // mode 1
+                    ADD RCS 1
+                    TOG // mode 0
+                    // save RCS ones counter
+                    LEA RAS 
+                    TOG // mode 1
+                    ADD RAS 64
+                    ADD RAS 64
+                    ADD RAS 32
+                    ADD RAS 1
+                    TOG // mode 0
+                    MOV [RAS] RCS
                     TOG // mode 1
                     DEC RES
-                    CMP RES 0
+                    COM RES 0
                     JE _endCount2
                     TOG // mode 0
                     JUMP _countOnes2
-               	    TOG // mode 1
+
         _endCount2:
-	    TOG // mode 0
             LEA RAS
             LEA RBS
             TOG // mode 1
@@ -244,51 +258,12 @@ _outLoop:
             JLT _lessThan
             JUMP _gotocompare
         _lessThan:
-	    LEA RAS
-	    LEA RCS
-	    TOG  // mode 1
-	    ADD RAS 64
-            ADD RAS 64
-            ADD RAS 64
-	    ADD RCS 64
-            ADD RCS 64
-            ADD RCS 32
-            ADD RCS 1
-	    TOG // mode 0
-	    MOV RCS [RCS]
             MOV [RAS] RCS
         _gotocompare:
-     	    LEA RBS
-	    LEA RCS
-	    TOG // mode 1
-	    ADD RBS 64
-            ADD RBS 64
-            ADD RBS 64
-            ADD RBS 1 
-	    ADD RCS 64
-            ADD RCS 64
-            ADD RCS 32
-            ADD RCS 1
-	    TOG // mode 0
-	    MOV RBS [RBS]
-   	    MOV RCS [RCS]
             CMP RBS RCS
             JLT _greaterThan
             JUMP _gotonext
         _greaterThan:
-   	    LEA RBS
-	    LEA RCS
-	    TOG // mode 1
-	    ADD RBS 64
-            ADD RBS 64
-            ADD RBS 64
-            ADD RBS 1
-	    ADD RCS 64
-            ADD RCS 64
-            ADD RCS 32
-            ADD RCS 1
-	    TOG // mode 0
-	    MOV RCS [RCS]
             MOV [RBS] RCS
         _gotonext:
             LEA RDS
@@ -302,16 +277,16 @@ _outLoop:
             TOG // mode 1
             ADD RBS 1
             ADD RBS 1
-	    MOV RCS 64
-	    DEC RCS 
-	    DEC RCS
-	    TOG // mode 0
-       	    CMP RBS RCS
-	    JGT _endinLoop
+            TOG // mode 0
             MOV [RDS] RBS
+            TOG // mode 1
+            DEC RC2 
+            CMP RC2 0
+            JE _endinLoop
+            TOG // mode 0
             JUMP _inLoop
-
     _endinLoop:
+        TOG // mode 0
         LEA RAS
         TOG // mode 1
         ADD RAS 64
@@ -322,15 +297,13 @@ _outLoop:
         TOG // mode 1
         ADD RCS 1
         ADD RCS 1
-	MOV RBS 64
-	DEC RBS
-	DEC RBS
-	DEC RBS
-	DEC RBS
         TOG // mode 0
-	CMP RCS RBS
-	JGT _endoutLoop // jump if progress > 60
         MOV [RAS] RCS
+        TOG // mode 1
+        DEC RC1
+        CMP RC1 0
+        JE _endoutLoop
+        TOG // mode 0
         JUMP _outLoop
 
 _endoutLoop:

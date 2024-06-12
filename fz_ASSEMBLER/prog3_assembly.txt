@@ -5,10 +5,9 @@ _Prog3_Init:
 	ADD RAS 64
 	ADD RAS 4
 	MOV RBS 0
-	MOV RC1 = 16  //RC1 =  outerloop counter
+	MOV RC1 16  //RC1 =  outerloop counter
 	TOG
 	MOV [RAS] RBS // current_idx = 0
-	
 _Prog3_OuterLoop:
 	LEA RAS
 	TOG
@@ -30,10 +29,54 @@ _Prog3_OuterLoop:
 	TOG
 	MOV [RAS] RBS // carry_addr = 0
 	TOG
-	ADD RAS 1   //RAS = multiplicand_addr
+	ADD RAS 1
+	ADD RAS 1   
+	TOG
+	MOV [RAS] RBS //multiplicand_sign_extend_addr = 0
+	TOG
+	DEC RAS  //RAS = current_idx (current multiplicand msb)
 	MOV RC2 16
 	TOG
+	MOV RAS [RAS]   //RAS = multiplicand_addr
+	MOV RBS RAS
+	MOV RCS RAS
+	MOV RDS RAS
+	TOG
+	ADD RBS 64
+	ADD RBS 1
+	ADD RBS 1   //RBS = Result_byte3_addr
+	ADD RCS 1
+	ADD RCS 1  //RCS = multiplier_msb_addr
+	ADD RDS 1
+	ADD RDS 1
+	ADD RDS 1  //RDS = multiplier_lsb_addr
+	TOG
+	MOV RCS [RCS]	//RCS = multiplier_msb
+	MOV RDS [RDS]     //RDS = multiplier_lsb
+	MOV [RBS] RCS   //copy multiplier msb to result_byte3_addr
+	TOG
+	ADD RBS 1   //RBS = Result_lsb_addr
+	TOG
+	MOV [RBS] RDS	//copy multiplier lsb to result_byte4_addr
 _Prog3_InnerLoop:
+	LEA RBS
+	TOG
+	ADD RBS 127
+	ADD RBS 64
+	MOV RCS 0
+	ADD RBS 1
+	ADD RBS 1
+	TOG
+	MOV [RBS] RCS  // borrow_addr = 0
+	TOG
+	ADD RBS 1
+	TOG
+	MOV [RBS] RCS  // carry_addr = 0
+	TOG
+	ADD RBS 1
+	ADD RBS 1
+	TOG
+	MOV [RBS] RCS  // multiplicand_sign_extend_addr = 0
 	CALL _rightShiftMultiplier
 	CALL _updateResult
 	TOG
@@ -41,28 +84,81 @@ _Prog3_InnerLoop:
 	JZ _Prog3_OuterLoop_Cont
 	TOG
 	JUMP _Prog3_InnerLoop
+	TOG
 _Prog3_OuterLoop_Cont:	
+	MOV RBS 0
+	ADD RBS 127
+	ADD RBS 64
+	ADD RBS 4   //RBS = current_idx (current multiplicand msb) 
+	TOG
+	MOV RAS [RBS]  //RAS = prev multiplicand_addr
+	TOG
+	MOV RBS 0
+	ADD RBS 127
+	ADD RBS 1   //RBS = 'b1000,0000
+	TOG
+	MOV RCS [RAS]
+	SUB RBS RCS
+	JZ  _multiplicand_msb_128
+	NOP
+	JUMP _Prog3_OuterLoop_Next
+_multiplicand_msb_128:
+	TOG
+	ADD RAS 1    //RAS = multiplicand_lsb_addr
+	TOG
+	MOV RCS [RAS]  //RCS = multiplicand_lsb
+	SUB RBS RCS
+	JZ _multiplicand_lsb_0
+	NOP
+	JUMP _Prog3_OuterLoop_Next
+_multiplicand_lsb_0:
+	COMP RCS        //flip bits
+	TOG
+	MOV RDS 1
+	ADD RAS 1
+	ADD RAS 1  
+	ADD RAS 64
+	TOG
+	ADD RCS RDS  //RCS = flipped result_lsb + 1
+	SLC RBS       //store carry
+	MOV [RAS] RCS
+	DEC RAS  //RAS = result_byte3_addr
+	LEA RDS
+	MOV RCS [RAS] //RCS =  result_byte3
+	COMP RCS
+	ADD RCS RBS   //RCS = flipped_result_byte3 + carry
+	SLC RDS
+	MOV [RAS] RCS
+	DEC RAS   //RAS = result_byte2_addr
+	LEA RBS
+	MOV RCS [RAS] //RCS =  result_byte2
+	COMP RCS
+	ADD RCS RDS   //RCS = flipped_result_byte2 + carry
+	SLC RBS
+	MOV [RAS] RCS
+	DEC RAS   //RAS = result_msb_addr
+	LEA RDS
+	MOV RCS [RAS] //RCS =  result_byte1
+	COMP RCS
+	ADD RCS RBS  //RCS = flipped_result_msb + carry
+	MOV [RAS] RCS
+_Prog3_OuterLoop_Next:
+	MOV RBS 0     //reload RAS
+	ADD RBS 127
+	ADD RBS 64
+	ADD RBS 4   //RBS = current_idx (current multiplicand msb) 
+	TOG
+	MOV RAS [RBS]  //RAS = prev multiplicand_addr
+	TOG
+	ADD RAS 4    //RAS = current multiplicand_addr
+	TOG
+	MOV [RBS] RAS   //update current_index
 	TOG
 	DEC RC1
 	JZ _Prog3_End
 	TOG
 	JUMP _Prog3_OuterLoop
 _updateResult:	        //assume RAS = multiplicand_addr
-	TOG
-	MOV RBS 0
-	ADD RBS 127
-	ADD RBS 64   //RBS = bit_zero_addr
-	TOG
-	MOV RCS RBS
-	TOG
-	ADD RCS 1      //RCS = bit_neg1_addr
-	TOG
-	SUB RBS RCS
-	TOG
-	MOV RCS 1
-	TOG
-	CMP RBS RCS
-	JE _pattern10
 	TOG
 	MOV RBS 0
 	ADD RBS 127
@@ -79,242 +175,132 @@ _updateResult:	        //assume RAS = multiplicand_addr
 	MOV RCS 1
 	TOG
 	CMP RBS RCS
-	JE _pattern10
-	ADDS RBS RCS
-	JZ _pattern01
-	CALL _rightShiftResult
+	JE _pattern10_begin
+	TOG
+	MOV RBS 0
+	ADD RBS 127
+	ADD RBS 64   //RBS = bit_zero_addr
+	TOG
+	MOV RCS RBS
+	TOG
+	ADD RCS 1      //RCS = bit_neg1_addr
+	TOG
+	MOV RBS [RBS]
+	MOV RCS [RCS]
+	SUBS RCS RBS
+	TOG
+	MOV RBS 1
+	TOG
+	CMP RBS RCS
+	JE _pattern01_begin
+	CALL _rightShiftResult_first2byte
 	RET	
-_pattern10:		//RAS = multiplicand_addr
+_pattern10_begin:		//RAS = multiplicand_addr
 	MOV RBS RAS
 	TOG
 	ADD RAS 1         
 	ADD RBS 64
 	ADD RBS 1
-	ADD RBS 1
-	ADD RBS 1    
 	TOG
 	MOV RCS [RAS]     //RCS = multiplicand lsb
-	MOV RDS [RBS]    //RDS  = result lsb
+	MOV RDS [RBS]    //RDS  = result_byte2
 	TOG
 	MOV RBS 0
 	ADD RBS 127
 	ADD RBS 64
 	ADD RBS 1
+	ADD RBS 1      //RBS = borrow_addr
+	TOG
+	MOV RBS [RBS]  //RBS = borrow
+	ADD RCS RBS   //RCS = multiplicand lsb + borrow
+	JZ _pattern10_Result1_multiplicandPlusBorrow_0
+	CMPU RDS RCS 
+	JLT _pattern10_Result1_setBorrow:
+	TOG
+	MOV RBS 0
+	MOV RCS 0
+	ADD RBS 127
+	ADD RBS 64
+	ADD RBS 1
 	ADD RBS 1
 	TOG
-	MOV RBS [RBS]
-	ADD RCS RBS   //RCS = multiplicand lsb + borrow
-	CMP RDS RCS 
-	JLT _pattern10_Result1_setBorrow:
-	JUMP _pattern10_Result1
-_pattern01:		//RAS = multiplicand_addr
+	MOV [RBS] RCS //reset borrow
+	JUMP _pattern10_Result1_cont
+_pattern01_begin:		//RAS = multiplicand_addr
 	MOV RBS RAS
 	TOG
 	ADD RAS 1     
 	ADD RBS 64
-	ADD RBS 1
-	ADD RBS 1
-	ADD RBS 1    
+	ADD RBS 1   
 	TOG
-	MOV RCS [RAS]     //RCS =  multiplicand lsb
-	MOV RDS [RBS]    //RDS  = result lsb
+	MOV RCS [RAS]     //RCS =  multiplicand_lsb
+	MOV RDS [RBS]    //RDS  = result_byte2
 	TOG
 	MOV RBS 0
 	ADD RBS 127
 	ADD RBS 64
 	ADD RBS 1
 	ADD RBS 1
-	ADD RBS 1
+	ADD RBS 1   //RBS = carry_addr
 	TOG
 	MOV RBS [RBS]   
-	ADDS RCS RDS             
-	SLC RBS   //RBS =  carry_in
+	ADD RCS RDS     //RCS = multiplicand_lsb +  result_byte2
+	SLC RBS   //RBS =  carry_out from lsb
 	TOG
 	MOV RDS 0
 	ADD RDS 127
 	ADD RDS 64
 	ADD RDS 1
 	ADD RDS 1
-	ADD RDS 1
+	ADD RDS 1   //RDS = carry_addr
 	TOG
 	MOV [RDS] RBS        //store carry_out from lsb
 	MOV RBS RAS
 	TOG   
-	ADD RBS 64
-	ADD RBS 1  
-	ADD RBS 1 
+	ADD RBS 64			//RBS = result_byte2 address
 	TOG
-	MOV [RBS] RCS    //RBS = resultmsb address
-	DEC RAS
-	DEC RBS 
-	MOV RCS [RAS]    
-	MOV RDS [RBS]  
+	MOV [RBS] RCS      //Update result_byte2
+	DEC RAS				//RAS = multiplicand_msb_addrs
+	DEC RBS 			//RBS = result_msb_addr
+	MOV RCS [RAS]        //RCS = multiplicand_msb
+	MOV RDS [RBS]  		//RDS = result_msb
 	TOG
 	MOV RBS 0
 	ADD RBS 127
 	ADD RBS 64
 	ADD RBS 1
 	ADD RBS 1
-	ADD RBS 1
+	ADD RBS 1       //RBS = carry_addr
 	TOG
 	MOV RBS [RBS]       
-	ADDS RCS RBS    //RCS = result + carry_in
-	SRC RBS                //rightshift with carry with RBS, result is either 8b' 1000,0000 or 8b' 0000, 0000
-	JZ _CarryIsZero_1
-	TOG
-	MOV RBS 1   
-	TOG
-_CarryIsZero_1:
-	ADDS RCS RDS    //RCS = result + multiplicand + carry_in
-	SLC RBS		//right left iwth carry, result is either 8b' 0000,0001 or 8b' 0000, 0000
-	TOG
-	MOV RDS 0
-	ADD RDS 127
-	ADD RDS 64
-	ADD RDS 1
-	ADD RDS 1
-	ADD RDS 1
-	TOG
-	MOV [RDS] RBS   //store carryout from 3rd byte
-	MOV RDS RAS
-	TOG
-	ADD RDS 64
-	ADD RDS 1
-	ADD RDS 1       //RDS = result 3rd byte addr
-	TOG
-	MOV [RDS] RCS 
+	ADD RCS RBS    //RCS = multiplicand_msb + carry_in
+	ADD RCS RDS    //RCS = multiplicand_msb + carry_in + result_msb
 	MOV RBS RAS
-	TOG   
+	TOG
 	ADD RBS 64
-	ADD RBS 1
-	MOV RCS 0
-	ADD RCS 127
-	ADD RCS 1 
 	TOG
-	MOV RDS [RAS]    //RDS = multiplicand msb byte
-	MOV RCS [RCS]
-	AND RCS RDS
-	JZ _multiplicandPositive_01_1
-	JUMP _multiplicandNegative_01_1
-_multiplicandPositive_01_1:
-	TOG
-	MOV RCS 0
-	TOG
-	JUMP _pattern01_cont
-_multiplicandNegative_01_1:
-	TOG
-	MOV RCS 0
-	ADD RCS 127
-	ADD RCS 4
-	ADD RCS 1 
-	TOG
-	MOV RCS [RCS]   //RCS =mask5 = 8b1111,1111
-_pattern01_1_cont:
-	MOV RDS RAS
-	TOG
-	MOV RBS 0
-	ADD RBS 127
-	ADD RBS 64
-	ADD RBS 1
-	ADD RBS 1
-	ADD RBS 1
-	ADD RDS 64
-	ADD RDS 1
-	TOG
-	MOV RDS [RDS]   //result 2nd byte
-	MOV RBS [RBS]   //RBS = carry_in
-	ADDS RDS RBS    
-	SRC RBS            //rightshift with carry with RBS, result is either 8b' 1000,0000 or 8b' 0000, 0000
-	JZ _CarryIsZero_2
-	TOG
-	MOV RBS 1   
-	TOG
-_CarryIsZero_2:
-	ADDS RCS RDS    //RCS = result + multiplicand(sign extended 2nd byte) + carry_in
-	SLC RBS		//right left iwth carry, result is either 8b' 0000,0001 or 8b' 0000, 0000
-	TOG
-	MOV RDS 0
-	ADD RDS 127
-	ADD RDS 64
-	ADD RDS 1
-	ADD RDS 1
-	ADD RDS 1
-	TOG
-	MOV [RDS] RBS  //store carryout from 2nd byte
-	MOV RDS RAS
-	TOG
-	ADD RDS 64
-	ADD RDS 1       //RDS = result 2nd byte addr
-	TOG
-	MOV [RDS] RCS 
-	MOV RBS RAS
-	TOG   
-	ADD RBS 64
-	MOV RCS 0
-	ADD RCS 127
-	ADD RCS 1 
-	TOG
-	MOV RDS [RAS]    //RDS = multiplicand msb
-	MOV RCS [RCS]
-	AND RCS RDS
-	JZ _multiplicandPositive_01_2
-	JUMP _multiplicandNegative_01_2
-_multiplicandPositive_01_2:
-	TOG
-	MOV RCS 0
-	TOG
-	JUMP _pattern01_2_cont
-_multiplicandNegative_01_2:
-	TOG
-	MOV RCS 0
-	ADD RCS 127
-	ADD RCS 4
-	ADD RCS 1 
-	TOG
-	MOV RCS [RCS]   //RCS =mask5 = 8b1111,1111
-_pattern01_2_cont:
-	MOV RDS RAS
-	TOG
-	MOV RBS 0
-	ADD RBS 127
-	ADD RBS 64
-	ADD RBS 1
-	ADD RBS 1
-	ADD RBS 1
-	ADD RDS 64
-	TOG
-	MOV RDS [RDS]   //result msb
-	MOV RBS [RBS]   //RBS = carry_in
-	ADDS RDS RBS    
-	SRC RBS            //rightshift with carry with RBS, result is either 8b' 1000,0000 or 8b' 0000, 0000
-	JZ _CarryIsZero_3
-	TOG
-	MOV RBS 1
-	TOG   
-_CarryIsZero_3:
-	ADDS RCS RDS    //RCS = result + multiplicand(sign extended 2nd byte) + carry_in
-	SLC RBS		//right left iwth carry, result is either 8b' 0000,0001 or 8b' 0000, 0000	
-	MOV RDS  RAS
-	TOG
-	ADD RDS 64  //RDS = result msb addr
-	TOG
-	MOV [RDS] RCS	
+	MOV [RBS] RCS    //update result_msb
 	JUMP _updateResult_END	
+_pattern10_Result1_multiplicandPlusBorrow_0:  //both zero or overflow
+	LEA RCS
+	CMP RBS RCS
+	JE _pattern10_Result1_cont      //both zero if borrow is zero
 _pattern10_Result1_setBorrow:
-	CALL _setBorrow
-_pattern10_Result1:
+	NOP
+	CALL _setBorrowValue
+_pattern10_Result1_cont:  //RAS = multiplicand lsb addr
 	MOV RBS RAS
 	TOG   
-	ADD RBS 64
+	ADD RBS 64    //RBS = result_byte2_addr
 	TOG
 	MOV RCS [RAS] 
 	MOV RDS [RBS]    
-	SUBS RDS RCS   //RDS = result_lsb - multiplicand_lsb
+	SUB RDS RCS   //RDS = result_byte2 - multiplicand_lsb
 	MOV [RBS] RDS    
-	DEC RAS                
-	DEC RBS
+	DEC RAS           //RAS = multiplicand msb addr
+	DEC RBS			  //RBS  = result 3rd byte addr
 	MOV RCS [RAS]     //RCS = multiplicand_msb
-	MOV RDS [RBS]   
+	MOV RDS [RBS]     //RDS  = result_msb
 	TOG
 	MOV RBS 0
 	ADD RBS 127
@@ -323,116 +309,15 @@ _pattern10_Result1:
 	ADD RBS 1
 	TOG
 	MOV RBS [RBS]            //RBS = current borrow value
-	ADD RCS RBS	//add borrow to multiplicand
-	CMP RDS RCS
-	JLT _pattern10_Result2_setBorrow
-	JUMP _pattern10_Result2:	
-_pattern10_Result2_setBorrow:
-	CALL _setBorrow
-_pattern10_Result2:
+	SUB RDS RBS	  //RDS = result_msb - borrow
+	SUB RDS RCS //RDS = result_byte2 - multiplicand_msb
 	MOV RBS RAS
-	TOG   
+	TOG         
 	ADD RBS 64
-	TOG   
-	MOV RDS [RBS]
-	SUBS RDS RCS   //RDS = result_msb - borrow 
-	MOV RCS [RAS] 
-	SUBS RDS RCS  //RDS = result_msb - borrow - multiplicand_msb
-	MOV [RBS] RDS                  
-	DEC RBS
-	TOG
-	MOV RCS 0
-	ADD RCS 127
-	ADD RCS 1   
-	TOG
-	MOV RCS  [RCS]   //RCS = mask1
-	MOV RDS [RAS]   //RDS =multiplicand_msb
-	AND RCS RDS     
-	JZ _MultiplicandPositive_10_2
-	JUMP _MultiplicandNegative_10_2
-_MultiplicandPositive_10_2:
-	TOG
-	MOV RCS 0
-	TOG
-	JUMP _pattern10_Result2_cont
-_MultiplicandNegative_10_2:
-	TOG
-	MOV RCS 0
-	ADD RCS 127
-	ADD RCS 4
-	ADD RCS 1 
-	TOG
-	MOV RCS [RCS]   //RCS =mask5 = 8b1111,1111
-_pattern10_Result2_cont:	 
-	TOG
-	MOV RBS 0
-	ADD RBS 127
-	ADD RBS 64
-	ADD RBS 1
-	ADD RBS 1
-	TOG
-	MOV RBS [RBS]
-	ADD RCS RBS
-	CMP RDS RCS
-	JLT _pattern10_Result3_setBorrow
-	JUMP  _pattern10_Result3:
-_pattern10_Result3_setBorrow
-	CALL _setBorrow
- _pattern10_Result3:
-	MOV RBS RAS
-	TOG   
-	ADD RBS 64
-	TOG
-	DEC RBS 
-	MOV RDS [RBS]
-	SUBS RDS RCS //RDS = result_byte2 - borrow 
-	MOV RCS [RAS] 
-	SUBS RDS RCS  //RDS = result_btyte2 - borrow - multiplicand_msb
-	MOV [RBS] RDS                 
-	TOG
-	MOV RCS 0
-	ADD RCS 127
-	ADD RCS 1   
-	TOG
-	MOV RCS  [RCS]   //RCS = mask1
-	MOV RDS [RAS]   //RDS = multiplicand_msb
-	AND RCS RDS     
-	JZ _MultiplicandPositive_10_3
-	JUMP _MultiplicandNegative_10_3
-_MultiplicandPositive_10_3:
-	TOG
-	MOV RCS 0
-	TOG
-	JUMP _pattern10_Result3_cont
-_MultiplicandNegative_10_3:
-	TOG
-	MOV RCS 0
-	ADD RCS 127
-	ADD RCS 4
-	ADD RCS 1 
-	TOG
-	MOV RCS [RCS]   //RCS =mask5 = 8b1111,1111
-_pattern10_Result3_cont:
-	TOG
-	MOV RBS 0
-	ADD RBS 127
-	ADD RBS 64
-	ADD RBS 1
-	ADD RBS 1
-	TOG
-	MOV RBS [RBS]
-	ADDS RCS RBS	//RCS = multiplicand(sign extended msb) + borrow
-	MOV RBS RAS
-	TOG   
-	ADD RBS 64
-	TOG 
-	DEC RBS
-	DEC RBS
-	MOV RDS [RBS]
-	SUBS RDS RCS    //RDS = result_msb - (multiplicand(sign extended msb) + borrow)
-	MOV [RBS] RDS
+	TOG     
+	MOV [RBS] RDS //update result_msb
 	JUMP _updateResult_END	
-_setBorrow:
+_setBorrowValue:
 	TOG
 	MOV RCS 0
 	ADD RCS 127
@@ -444,56 +329,50 @@ _setBorrow:
 	MOV [RCS] RDS          
 	RET
 _updateResult_END:
-	CALL _rightShiftResult
+	CALL _rightShiftResult_first2byte
 	RET	
-_rightShiftResult:   //assume RAS = multiplicand_addr
+_rightShiftResult_first2byte:   //assume RAS = multiplicand_msb_addr
 	TOG
 	ADD RAS 64
-	MOV RCS 0
 	MOV RBS 0
+	MOV RCS 0
 	ADD RCS 127
 	ADD RCS 64
-	ADD RCS 32   //RCS = shift_carry_addr
+	ADD RCS 32  //RCS = shift_carry_addr
 	TOG
 	MOV RDS [RAS]	   //fetch result msb
-	ASR  RDS                     //arithmetic rightshift msb
-	SRC RBS                      //RBS = shift_carry
-	MOV [RAS] RDS
-	MOV [RCS] RBS
+	ASR RDS                     //arithmetic rightshift msb
+	SRC RBS                      //RBS = shift_carry 8'b1000,0000 or 8'b0000,0000
+	MOV [RAS] RDS		  //update result_msb
+	MOV [RCS] RBS         //update shift carry
 	TOG
-	ADD RAS 1
+	ADD RAS 1		//RAS = result_byte2
 	MOV RBS 0
 	TOG
 	MOV RDS [RAS]	
 	SHR RDS		//logical right shift
-	SRC RBS
-	ADD RDS [RCS]	//add shift_carry
-	MOV [RAS] RDS              
-	MOV [RCS] RBS
+	SRC RBS     //RBS = 8'b1000,0000 or 8'b0000,0000
+	MOV RCS [RCS]   //RCS = shift_Carry from msb
+	ADD RDS RCS	//add shift_carry
+	MOV [RAS] RDS    //update result_byte2          
 	TOG
-	ADD RAS 1
-	MOV RBS 0
+	ADD RAS 1     //RAS = result_byte3
 	TOG
 	MOV RDS [RAS]	
-	SHR RDS		//logical right shift
-	SRC RBS
-	ADD RDS [RCS]	//add shift_carry
-	MOV [RAS] RDS              
-	MOV [RCS] RBS
+	ADD RDS RBS	//RDS = result_byte3 + shift_carry( 8'b1000,0000 or 8'b0000,0000)
+	MOV [RAS] RDS  //update result_byte3    
 	TOG
-	ADD RAS 1
-	MOV RBS 0
+	MOV RBS 64
 	TOG
-	MOV RDS [RAS]	//lsb
-	SHR RDS		//logical right shift
-	ADD RDS [RCS]	//add shift_carry
-	MOV [RAS] RDS              
-	MOV [RCS] RBS
+	SUB RAS RBS
+	DEC RAS
+	DEC RAS		//RAS is back to multiplicand_msb_addr		
 	RET
-_rightShiftMultiplier:        //assume RAS = multiplicand_addr
-	TOG
+_rightShiftMultiplier:        //assume RAS = multiplicand_addr 
+	TOG						  
 	ADD RAS 1
-	ADD RAS 1   //RAS = multiplier_addr
+	ADD RAS 1   //RAS = multiplier_msb_addr
+	ADD RAS 64	//RAS = result_byte3 
 	MOV RCS 0
 	MOV RBS 0
 	ADD RCS 127
@@ -501,17 +380,17 @@ _rightShiftMultiplier:        //assume RAS = multiplicand_addr
 	ADD RCS 32   //RCS = shift_carry_addr
 	TOG
 	MOV RDS [RAS]	   //fetch multiplier msb
-	ASR  RDS                     //arithmetic rightshift msb
+	SHR  RDS                     //rightshift msb
 	SRC RBS                      //RBS either 8'b0000,0000 or 8'b1000,0000
 	MOV [RAS] RDS
 	MOV [RCS] RBS     //RCS = shift_carry
 	TOG
-	ADD RAS 1
+	ADD RAS 1    //RAS = result_lsb
 	MOV RBS 0
 	TOG
 	MOV RDS [RAS]	//lsb
 	SHR RDS		//logical right shift
-	SRC RBS		//shift_Carry(current)
+	SLC RBS		//shift_Carry(current)
 	MOV RCS [RCS]	
 	ADD RDS RCS	//add shift_carry(previous)
 	MOV [RAS] RDS
@@ -531,17 +410,30 @@ _rightShiftMultiplier:        //assume RAS = multiplicand_addr
 	TOG
 	ADD RDS  1	//RDS = bit_neg1_addr
 	TOG
+	MOV RCS [RCS]
 	MOV [RDS] RCS  //*bit_neg1_addr = bit_zero
 	TOG
+	MOV RCS 0
+	ADD RCS 127
+	ADD RCS 64  //RCS = bit_zero_addr
 	MOV RDS 0
 	ADD RDS 127
 	ADD RDS 64 
 	ADD RDS 32   //RDS = shift_carry_addr
 	TOG
+	MOV RDS [RDS]
 	MOV [RCS] RDS   //*bit_zero_addr = current_shift_carry
+	DEC RAS
+	DEC RAS
+	DEC RAS   
+	TOG
+	MOV RBS 64
+	TOG
+	SUB RAS RBS //RAS back to multiplicand_addr
 	RET
-
+	TOG
 _Prog3_End:
+	TOG
 	NOP
 	NOP
 	NOP

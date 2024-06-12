@@ -41,18 +41,20 @@ always_comb begin
 			if(zeroQ)
 				 jump = 1'b1;
 		end
-		'b11010:  begin   //JGT
-			if(gtQ)
+		'b11001:  begin   //JLT
+			if(ltQ)
 				 jump = 1'b1;
 		end
-		'b11001:  begin
-			if(ltQ)
+		'b11010:  begin //JGT
+			if(gtQ)
 				 jump = 1'b1;
 		end 
 		'b01011: begin call = 1'b1; jump = 1'b1;end
 		'b01100: begin ret = 1'b1; jump = 1'b1;end
 		'b01000: begin lea = 1'b1; regWrite = 1'b1;  end
 		'b00101:  ALUctr = opcode;                              //CMP, no writeback
+		'b11011:  ALUctr = opcode;    			//CMPU, no writeback
+		'b11111: ALUctr = opcode; 			//NOP, no writeBack
 		default: begin
 			ALUctr = opcode;
 			regWrite = 1'b1;

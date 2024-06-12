@@ -15,23 +15,23 @@ module LUT_RetAddrStack #(parameter D=12,parameter STACK_DEPTH = 8)(
      	if (call) begin
      		if (sp < STACK_DEPTH) begin
         		ReturnAddr_Stack[sp] = addr + 1;
-			$display("addr: %0d", addr);
+			/*$display("addr: %0d", addr);
 			$display("call");
 			$display("sp: %0d",sp);
 			$display("0: ReturnAddr_Stack[sp]: %0d",ReturnAddr_Stack[0]);
 			$display("1: ReturnAddr_Stack[sp]: %0d", ReturnAddr_Stack[1]);
-			$display("2: ReturnAddr_Stack[sp]: %0d", ReturnAddr_Stack[2]);
+			$display("2: ReturnAddr_Stack[sp]: %0d", ReturnAddr_Stack[2]);*/
         		sp <= sp + 1;
       		end
      	end 
      	if (ret && sp > 0) begin
             	sp = sp - 1;  
             	target_out <= ReturnAddr_Stack[sp];  
-	    	$display("return");
+	    	/*$display("return");
 	    	$display("sp: %0d",sp);
 		$display("0: ReturnAddr_Stack[sp]: %0d",ReturnAddr_Stack[0]);
 		$display("1: ReturnAddr_Stack[sp]: %0d", ReturnAddr_Stack[1]);
-		$display("2: ReturnAddr_Stack[sp]: %0d", ReturnAddr_Stack[2]);
+		$display("2: ReturnAddr_Stack[sp]: %0d", ReturnAddr_Stack[2]);*/
      	end 
      end
      if (!ret) begin

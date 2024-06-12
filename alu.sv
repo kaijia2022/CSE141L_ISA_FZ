@@ -22,19 +22,19 @@ always_comb begin
   lt = 'b0;
   case(ALUOp)
     5'b00111:  begin    //ADD 
-      {c_o,rslt} = inA + inB + c_i;
+      {c_o,rslt} = $unsigned(inA) + $unsigned(inB) + $unsigned(c_i);
       zero = !rslt;
     end
     5'b01110: begin// SUB 
-      {c_o,rslt} = inA - inB + c_i;
+      rslt = $unsigned(inA) - $unsigned(inB);
       zero = !rslt;
     end
     5'b10110:  begin    //ADDS 
-      {c_o,rslt} = $signed(inA)+ $signed(inB) + c_i;
+      {c_o,rslt} = $signed(inA)+ $signed(inB) + $signed(c_i);
       zero = !rslt;
     end
     5'b10111: begin// SUBS 
-      {c_o,rslt} = $signed(inA)- $signed(inB) + c_i;
+      {c_o,rslt} = $signed(inA)- $signed(inB) + $signed(c_i);
       zero = !rslt;
     end
     5'b00010: begin// DEC
@@ -78,6 +78,16 @@ always_comb begin
           zero = ($signed(inA) == $signed(inB));
  	  gt = ($signed(inA) > $signed(inB));
 	  lt = ($signed(inA) < $signed(inB));
+    end
+    5'b11011: begin //compare with unsigned
+	  equal = ($unsigned(inA) == $unsigned(inB));
+          zero = ($unsigned(inA) == $unsigned(inB));
+ 	  gt = ($unsigned(inA) > $unsigned(inB));
+	  lt = ($unsigned(inA) < $unsigned(inB));
+    end
+    5'b11100: begin//Logic Shift Right
+	  rslt = ~inA;
+	  zero = !rslt;
     end
   endcase
 end
