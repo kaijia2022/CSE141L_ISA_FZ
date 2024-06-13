@@ -126,6 +126,8 @@ module top_level(
   always_ff @(posedge clk) begin
 	if (reset) begin
 		cycle_ctr = 2'b00;
+		mode = 1'b0;
+		modeQ = 1'b0;
 	end
 	else begin
 		if (cycle_ctr == 2'b11) begin
@@ -150,10 +152,6 @@ module top_level(
       	c_i <= c_o;
   end
   always_ff @(negedge clk) begin
-	if (reset) begin
-		mode <= 1'b0;
-		modeQ <= 1'b0;
-	end
 	if(!reset) begin
 		if (cycle_ctr == 2'b11)
 			modeQ <= mode;

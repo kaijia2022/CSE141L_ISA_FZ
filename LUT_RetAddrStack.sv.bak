@@ -21,7 +21,7 @@ module LUT_RetAddrStack #(parameter D=12,parameter STACK_DEPTH = 8)(
 			$display("0: ReturnAddr_Stack[sp]: %0d",ReturnAddr_Stack[0]);
 			$display("1: ReturnAddr_Stack[sp]: %0d", ReturnAddr_Stack[1]);
 			$display("2: ReturnAddr_Stack[sp]: %0d", ReturnAddr_Stack[2]);*/
-        		sp z= sp + 1;
+        		sp <= sp + 1;
       		end
      	end 
      	if (ret && sp > 0) begin
