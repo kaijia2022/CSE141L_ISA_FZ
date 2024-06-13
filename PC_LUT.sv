@@ -6,12 +6,12 @@ module PC_LUT #(parameter D=12)(
   logic [D-1:0] Jump_Instructions[256];
   logic [D-1:0] Jump_Offsets[256];
   initial begin
-     $readmemb("prog1_Jump_Instructions.txt", Jump_Instructions);
-     $readmemb("prog1_offsets.txt", Jump_Offsets); 
+     //$readmemb("prog1_Jump_Instructions.txt", Jump_Instructions);
+     //$readmemb("prog1_offsets.txt", Jump_Offsets); 
      //$readmemb("prog2_Jump_Instructions.txt", Jump_Instructions);
      //$readmemb("prog2_offsets.txt", Jump_Offsets); 
-     //$readmemb("prog3_Jump_Instructions.txt", Jump_Instructions);
-     //$readmemb("prog3_offsets.txt", Jump_Offsets); 
+     $readmemb("prog3_Jump_Instructions.txt", Jump_Instructions);
+     $readmemb("prog3_offsets.txt", Jump_Offsets); 
   end
 
   always_ff@(posedge clk) begin

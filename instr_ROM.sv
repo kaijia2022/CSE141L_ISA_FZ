@@ -7,9 +7,9 @@ module instr_ROM #(parameter D=12)(
 
   logic[8:0] core[2**D];
   initial
-    $readmemb("prog1_test_machine_code.txt",core);							    // load the program
+    //$readmemb("prog1_test_machine_code.txt",core);							    // load the program
     //$readmemb("prog2_test_machine_code.txt",core);
-    //$readmemb("prog3_test_machine_code.txt",core);
+    $readmemb("prog3_test_machine_code.txt",core);
   always_comb  mach_code = core[prog_ctr];
 
 endmodule

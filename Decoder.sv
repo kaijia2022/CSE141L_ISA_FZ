@@ -6,13 +6,12 @@ module Decoder #(parameter opwidth = 5,parameter regwidth = 3)(
   output logic[opwidth-1:0] opcode,	
   output logic[regwidth-1:0] reg1, reg2,	
   output logic[7:0] immediate,
-  output logic mode);   // for up to 8 ALU operations
- 
+  output logic  setMode);   // for up to 8 ALU operations
 always_comb begin
+    setMode = 0;
     reg1 = 0;
     reg2 = 0;
     immediate = 0;
-    mode = modeQ;
 	//reg-reg mode
 	if (!modeQ) begin
 		opcode = mach_code[8:4];
@@ -37,7 +36,7 @@ always_comb begin
 		endcase
 	end
 	if (opcode == 5'b00000)
-		mode = !modeQ;	
+		setMode = 1;	
 
 
 end

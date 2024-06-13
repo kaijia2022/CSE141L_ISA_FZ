@@ -7,7 +7,7 @@ module top_level(
   wire[D-1:0] 	target, 			  // jump
 	      	LUTout, 
               	prog_ctr;
-  logic        	memRead,memWrite,regWrite, memToReg, regToMem, regToReg, jump, call,ret,lea,mode;
+  logic        	memRead,memWrite,regWrite, memToReg, regToMem, regToReg, jump, call,ret,lea,mode,setMode;
   logic[7:0]   	datA,datB,		  // from RegFile
 		rslt,               // alu output
               	immediate,
@@ -29,6 +29,7 @@ module top_level(
   wire[2:0] reg1, reg2;    // address pointers to reg_file
 
   logic [1:0] cycle_ctr;
+
 // fetch subassembly
   PC #(.D(D)) 					  // D sets program counter width
      pc1 (.reset            ,
@@ -65,7 +66,7 @@ module top_level(
               .reg1,
               .reg2,
               .immediate,
-	      .mode);
+	      .setMode);
 // control
   Control ctl1( .clk,
 		.opcode,
@@ -124,14 +125,9 @@ module top_level(
 // registered flags from ALU
   always_ff @(posedge clk) begin
 	if (reset) begin
+		cycle_ctr = 2'b00;
 		mode = 1'b0;
 		modeQ = 1'b0;
-		cycle_ctr = 2'b00;
-		zero = 1'b0;
-		equal = 1'b0;
-		gt = 1'b0;
-		lt = 1'b0;
-		c_o = 1'b0;
 	end
 	else begin
 		if (cycle_ctr == 2'b11) begin
@@ -159,6 +155,13 @@ module top_level(
 	if(!reset) begin
 		if (cycle_ctr == 2'b11)
 			modeQ <= mode;
+		if (cycle_ctr == 2'b00) begin
+			if (setMode)
+				mode <= !modeQ;
+			else
+				mode <= modeQ;
+		end
+			
 	end
   end
   //assign modeQ = mode;
