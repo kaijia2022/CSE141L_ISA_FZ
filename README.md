@@ -41,7 +41,7 @@ RISC 9bit special purpose ISA for CSE 141L
 
 ## ISA Design
 
-    ![ISA](/images/images/ISA.PNG)
+    ![ISA](/images/ISA.PNG)
 
 ## Top_level view (Quartus)
 
