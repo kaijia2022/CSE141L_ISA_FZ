@@ -4,19 +4,28 @@ RISC 9bit special purpose ISA for CSE 141L
 
 ## Features
  - 9-bit intruction length
+
  - 8-bit data path
- - supports relative jumpss
- - supports function calls
- - five stage machine
+
+ - Supports relative jumpss
+
+ - Supports function calls
+
+ - Five stage machine
+
  - 4 cycles per instruction
- - assembler(vs2022)
+
+ - Assembler(vs2022)
+
  - contains assembly and machine codes for the following programs:
+
     - Closest and farthest Hamming pairs -- Write a program to find the least and greatest Hamming
         distances among all pairs of values in an array of 32 two-byte half-words. Assume all values are
         signed 16-bit (“half-word”) integers. The array of integers runs from data memory location 0 to 63.
         Even-numbered addresses are MSBs, following odd addresses are LSBs, e.g. a concatenation of
         addresses 0 and 1 forms a 16-bit two’s complement half-word. Write the minimum distance in
         location 64 and the maximum in 65.
+
     - Closest and farthest arithmetic pairs -- Write a program to find the absolute values of the least and
         greatest arithmetic difference among all pairs of incoming values from Program 2. Assume again that
         all values are two’s complement (“signed”) 16-bit integers. The array of integers starts at location 0.
@@ -41,11 +50,11 @@ RISC 9bit special purpose ISA for CSE 141L
 
 ## ISA Design
 
-    ![ISA](/images/ISA.PNG)
+    See /images/ISA.PNG.
 
 ## Top_level view (Quartus)
 
-    ![Quartus generate](/images/top_level.PNG)
+    See /images/top_level.PNG
 
 ## Instruction format
 
@@ -64,13 +73,19 @@ RISC 9bit special purpose ISA for CSE 141L
 ## Known Issues
 
 - Assembler is case sensitive
-- 'COMP' operation is not taking 2's comp, but flipping the bits.
+
+- `LEA` currently Hardcodes the program entrypoint address to be 0. 
+
+- `COMP` operation is not taking 2's comp, but flipping the bits.
+
 - Multiplication uses boot's algorithm but edge cases are hardcoded based on testfiles
     - TODO: Handle overflow edge cases
-- ISA sketch is slightly out of date, stages are controlled by a counter in top_level
+
+- ISA sketch is slightly out of date, stages are now controlled by a counter in top_level
     - TODO: Update ISA sketch image
 
 
 ## Contributors
-- Bran
-- Henry
+- [Bran Zhang](https://github.com/kaijia2022)
+
+- [Henry Feng](https://github.com/Henryfzh)
