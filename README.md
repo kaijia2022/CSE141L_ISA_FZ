@@ -1,5 +1,6 @@
 ## CSE141L_ISA_FZ
-RISC 9bit special purpose ISA for CSE 141L
+
+RISC 9 bit special purpose ISA for CSE 141L
 
 
 ## Features
@@ -84,7 +85,12 @@ RISC 9bit special purpose ISA for CSE 141L
 - ISA sketch is slightly out of date, stages are now controlled by a counter in top_level
     - TODO: Update ISA sketch image
 
+## Build
 
+ - ISA: Create a new project in Modelsim 2020.1, add all testfiles, machinecodes, jump instructions and offsets to the project directory in modelsim.
+
+ - Assembler: VS2022.
+ 
 ## Contributors
 - [Bran Zhang](https://github.com/kaijia2022)
 
