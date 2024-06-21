@@ -18,7 +18,7 @@ RISC 9 bit special purpose ISA for CSE 141L
 
  - Assembler(vs2022)
 
- - contains assembly and machine codes for the following programs:
+ - contains assembly and machine codes for the following programs (passes all 3 testbenches 100%):
 
     - Closest and farthest Hamming pairs -- Write a program to find the least and greatest Hamming
         distances among all pairs of values in an array of 32 two-byte half-words. Assume all values are
